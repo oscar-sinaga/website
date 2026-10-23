@@ -70,8 +70,8 @@ footer{color:#708bac;font-size:.82rem;margin-top:32px}
 <h2>🔐 Izin menyimpan</h2>
 <p class="helper">GitHub Pages tidak memiliki backend untuk menulis file. Karena itu, perlu <strong>fine-grained GitHub token</strong> milikmu dengan akses hanya ke repository <code>oscar-sinaga/website</code>.</p>
 <label class="label" for="token">Fine-grained GitHub token</label>
-<input id="token" type="password" placeholder="github_pat_..." autocomplete="off" autocapitalize="off" spellcheck="false">
-<p class="helper" style="margin-top:9px">Token hanya dipakai saat menyimpan. Tidak ditanam di source code, tidak disimpan di localStorage/cookie, dan dikosongkan dari kolom setelah percobaan penyimpanan.</p>
+<input id="token" type="password" placeholder="github_pat_..." autocomplete="off" autocapitalize="off" spellcheck="false"><div class="actions"><button type="button" id="clearToken">Hapus token dari halaman</button></div>
+<p class="helper" style="margin-top:9px">Token hanya dikirim ke GitHub saat klik Simpan. Cukup masukkan sekali selama tab ini terbuka; token tidak disimpan di source code, localStorage, cookie, atau server. Token akan dibersihkan saat meninggalkan atau memuat ulang halaman.</p>
 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Buat fine-grained token di GitHub ↗</a>
 <ol class="steps"><li><strong>Resource owner:</strong> oscar-sinaga</li><li><strong>Repository access:</strong> Only select repositories → website</li><li><strong>Permissions → Contents:</strong> Read and write</li><li><strong>Expiration:</strong> pilih yang pendek, misalnya 7 hari</li><li>Salin token dan tempel ke kolom ini (jangan pernah kirim token di chat).</li></ol>
 <p class="helper danger" style="margin:14px 0 0">Gunakan hanya pada perangkat dan browser yang kamu percayai. Token memberi izin mengubah file repository sesuai cakupannya.</p>
@@ -133,6 +133,9 @@ footer{color:#708bac;font-size:.82rem;margin-top:32px}
     notify(editor.value===savedContent?'Tidak ada perubahan dari versi tersimpan.':'Perubahan belum tersimpan. Klik Simpan permanen.','info');
   });
   reload.addEventListener('click',()=>load(false));
+  byId('clearToken').addEventListener('click',()=>{token.value='';notify('Token sudah dikosongkan dari halaman ini.','success');});
+  addEventListener('pagehide',()=>{token.value='';});
+  token.value='';
   save.addEventListener('click',async()=>{
     if(busy||!currentSha)return;
     if(editor.value===savedContent){notify('Tidak ada perubahan untuk disimpan.','info');return;}
@@ -163,7 +166,6 @@ footer{color:#708bac;font-size:.82rem;margin-top:32px}
       if(err.status===409)msg='Konflik versi: '+err.message;
       notify('Gagal menyimpan: '+msg,'error');
     }finally{
-      token.value='';
       setBusy(false);
     }
   });
