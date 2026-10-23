@@ -308,7 +308,7 @@ function finish(timeUp){
 function render(){
   renderTop();
   const app = $("#app");
-  if (!EXAMS.length) { app.innerHTML = `<div class="loaderr"><b>Soal tidak termuat.</b> File <code>data/exams.js</code> harus berada di folder yang sama dengan halaman ini.</div>`; return; }
+  if (!EXAMS.length) { app.innerHTML = `<div class="loaderr"><b>Bank soal tidak berhasil dimuat.</b> Periksa koneksi dan coba <a href="./">muat ulang halaman ujian</a>, atau kembali ke <a href="../">AWS Mock Exams</a>.</div>`; return; }
   if (S.screen==="home") app.innerHTML = homeHTML();
   else if (S.screen==="run") app.innerHTML = runHTML();
   else if (S.screen==="result") app.innerHTML = resultHTML();
@@ -325,7 +325,7 @@ function renderTop(){
   } else if (S.screen==="result") {
     right += `<button class="btn ghost sm" data-act="home">Beranda</button>`;
   }
-  $("#topbar").innerHTML = `<button class="brand" data-act="home" aria-label="Kembali ke beranda">Cloud Practitioner Mock <span class="code">CLF-C02</span></button><span class="spacer"></span>${right}`;
+  $("#topbar").innerHTML = `<button class="brand" data-act="home" aria-label="Kembali ke beranda">Cloud Practitioner Mock <span class="code">CLF-C02</span></button><span class="spacer"></span>${right}<a class="btn ghost sm" href="../" title="Pilih sertifikasi AWS lain" style="white-space:nowrap">← AWS Exams</a>`;
   $("#progwrap").hidden = !run;
   if (run){ const done = S.qs.filter((_,k)=>(S.ans[k]||[]).length).length; $("#progbar").style.width = (done/S.qs.length*100)+"%"; }
 }
