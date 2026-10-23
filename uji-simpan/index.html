@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071629">
+<meta name="description" content="Editor file teks publik yang menyimpan perubahan permanen ke GitHub dari browser.">
+<title>Uji Simpan Permanen — Oscar Sinaga</title>
+<style>
+:root{color-scheme:dark;--bg:#081325;--panel:#101f36;--panel2:#152945;--line:#2a4162;--text:#f4f8ff;--muted:#a5b8d0;--blue:#68b8ff;--teal:#64eed0;--danger:#ff9b9b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse 650px 470px at 80% -15%,#204875 0%,transparent 95%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.container{max-width:1060px;margin:0 auto;padding:36px 24px 80px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:45px;flex-wrap:wrap}
+.brand{color:#cbe7ff;font-weight:800;letter-spacing:.11em;text-transform:uppercase;font-size:.78rem}
+a{color:#9fd5ff;text-decoration:none}a:hover{text-decoration:underline}
+.back{color:var(--muted);font-size:.9rem}
+.eyebrow{letter-spacing:.18em;color:var(--teal);font-size:.78rem;font-weight:750;text-transform:uppercase}
+h1{margin:14px 0;font-size:clamp(2.2rem,5.6vw,3.9rem);line-height:1.13;letter-spacing:-.05em}
+h1 em{font-style:normal;background:linear-gradient(120deg,#81e7f1,#80aaff);color:transparent;background-clip:text}
+.intro{color:var(--muted);max-width:750px;margin:0 0 30px;font-size:1rem}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 28px}.badge{padding:6px 11px;font-size:.8rem;color:#c6d8ef;border-radius:40px;border:1px solid var(--line)}
+.panel{background:linear-gradient(155deg,#152842,#101d33);border:1px solid var(--line);border-radius:20px;padding:24px;margin-bottom:20px;box-shadow:0 18px 40px #0002}
+.heading-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h2{margin:0 0 13px;font-size:1.2rem;letter-spacing:-.02em}p{margin-top:0}
+code{font:inherit;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em;background:#ffffff14;border-radius:5px;padding:2px 5px}
+.helper{color:var(--muted);font-size:.86rem}
+.label{display:block;font-weight:700;font-size:.87rem;margin:12px 0 8px}
+textarea,input{width:100%;border:1px solid #52739b;background:#09182b;color:var(--text);border-radius:12px;padding:14px;font:inherit;outline-offset:3px}
+textarea{min-height:300px;line-height:1.6;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9rem}
+textarea:focus,input:focus{outline:2px solid var(--blue)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{border:1px solid #6a88a4;border-radius:11px;padding:11px 16px;background:#233a59;color:#f1f8ff;font:700 .9rem system-ui;cursor:pointer}
+button.primary{background:linear-gradient(115deg,#63dce9,#72a4ff);color:#071d31;border:0}
+button:hover:not(:disabled){filter:brightness(1.12)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(275px,.85fr);gap:18px;align-items:start}
+@media(max-width:740px){.grid{grid-template-columns:1fr}.container{padding:24px 16px 64px}.panel{padding:20px}}
+pre{margin:9px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#d0e3fb}
+.preview{border:1px solid #344e6c;background:#09172a;min-height:150px;padding:16px;border-radius:12px}
+.steps{margin:0;padding-left:21px;color:var(--muted)}.steps li{margin:8px 0}.steps strong{color:var(--text)}
+.state{border:1px solid #375d7d;background:#11324a;padding:12px 14px;border-radius:11px;margin-top:16px;color:#bfe3ff;font-size:.88rem}
+.state[data-type=success]{border-color:#397962;background:#0e302a;color:#9ff7da}.state[data-type=error]{border-color:#98575e;background:#3b202a;color:#ffc0c5}
+.danger{color:#f8bdc5}.fileinfo{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:10px}.small{font-size:.81rem;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+footer{color:#708bac;font-size:.82rem;margin-top:32px}
+</style>
+</head>
+<body>
+<div class="container">
+<nav><span class="brand">Oscar Sinaga / Web Lab</span><a class="back" href="../">← Kembali ke direktori website</a></nav>
+<div class="eyebrow">Eksperimen 01 · Persistent Storage</div>
+<h1>Edit file dari browser.<br><em>Tersimpan permanen.</em></h1>
+<p class="intro">Kamu sedang mengedit file <code>uji-simpan/catatan.txt</code> sungguhan di GitHub. Setiap klik <strong>Simpan permanen</strong> akan membuat commit. Perubahan tetap ada setelah browser ditutup dan bisa dibaca semua pengunjung.</p>
+<div class="badges"><span class="badge">✓ GitHub Pages</span><span class="badge">✓ Tanpa server pribadi</span><span class="badge">✓ Versi di GitHub</span><span class="badge">✓ Autentikasi untuk menyimpan</span></div>
+<div class="grid">
+<section class="panel">
+<div class="fileinfo"><h2>Editor catatan.txt</h2><span id="version" class="small">Memuat versi file...</span></div>
+<label class="label" for="editor">Isi file</label>
+<textarea id="editor" spellcheck="false" aria-label="Edit isi catatan" placeholder="Memuat isi file..." disabled></textarea>
+<div class="actions"><button class="primary" type="button" id="save" disabled>💾 Simpan permanen</button><button type="button" id="reload">↻ Muat versi terbaru</button></div>
+<div class="state" role="status" aria-live="polite" id="status">Memuat file dari GitHub...</div>
+<p class="helper" style="margin:13px 0 0">Setelah sukses, halaman akan menampilkan commit GitHub. Publikasi versi terbaru ke GitHub Pages berlangsung otomatis.</p>
+<hr>
+<h2>Pratinjau isi file</h2>
+<div class="preview"><pre id="preview">Memuat...</pre></div>
+</section>
+<aside>
+<section class="panel">
+<h2>🔐 Izin menyimpan</h2>
+<p class="helper">GitHub Pages tidak memiliki backend untuk menulis file. Karena itu, perlu <strong>fine-grained GitHub token</strong> milikmu dengan akses hanya ke repository <code>oscar-sinaga/website</code>.</p>
+<label class="label" for="token">Fine-grained GitHub token</label>
+<input id="token" type="password" placeholder="github_pat_..." autocomplete="off" autocapitalize="off" spellcheck="false">
+<p class="helper" style="margin-top:9px">Token hanya dipakai saat menyimpan. Tidak ditanam di source code, tidak disimpan di localStorage/cookie, dan dikosongkan dari kolom setelah percobaan penyimpanan.</p>
+<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Buat fine-grained token di GitHub ↗</a>
+<ol class="steps"><li><strong>Resource owner:</strong> oscar-sinaga</li><li><strong>Repository access:</strong> Only select repositories → website</li><li><strong>Permissions → Contents:</strong> Read and write</li><li><strong>Expiration:</strong> pilih yang pendek, misalnya 7 hari</li><li>Salin token dan tempel ke kolom ini (jangan pernah kirim token di chat).</li></ol>
+<p class="helper danger" style="margin:14px 0 0">Gunakan hanya pada perangkat dan browser yang kamu percayai. Token memberi izin mengubah file repository sesuai cakupannya.</p>
+</section>
+<section class="panel">
+<h2>Bagaimana penyimpanannya?</h2>
+<p class="helper">1. Browser memuat file terbaru menggunakan GitHub API.<br>2. Kamu mengubah teks.<br>3. Klik Simpan dengan token pribadi.<br>4. GitHub mencatat commit baru dan Pages memperbarui website.</p>
+<p class="helper">Jika file berubah saat kamu sedang mengedit, editor tidak akan menimpa perubahan tersebut secara diam-diam.</p>
+<a href="https://github.com/oscar-sinaga/website/blob/main/uji-simpan/catatan.txt" target="_blank" rel="noopener noreferrer">Lihat file asli di GitHub ↗</a>
+</section>
+</aside>
+</div>
+<footer>Catatan ini publik. Jangan menyimpan password, token, API key, atau data rahasia di dalam file.</footer>
+</div>
+<script>
+(() => {
+  'use strict';
+  const api='https://api.github.com/repos/oscar-sinaga/website/contents/uji-simpan/catatan.txt';
+  const byId = id => document.getElementById(id);
+  const editor=byId('editor'), preview=byId('preview'), token=byId('token');
+  const save=byId('save'), reload=byId('reload'), status=byId('status'), version=byId('version');
+  let currentSha=null, savedContent='', busy=false;
+  function notify(message,type='info'){status.textContent=message;status.dataset.type=type;}
+  function utf8FromBase64(data){
+    const binary=atob(data.replace(/\s/g,''));
+    const bytes=Uint8Array.from(binary, c=>c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  function base64FromUtf8(value){
+    const bytes=new TextEncoder().encode(value);
+    let binary='';
+    for(let i=0;i<bytes.length;i+=8192) binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+    return btoa(binary);
+  }
+  async function apiCall(url,options={}){
+    const response=await fetch(url,{cache:'no-store',...options});
+    let data;
+    try {data=await response.json();} catch {data={message:'Respons tidak dikenali'};}
+    if(!response.ok){const error=new Error(data.message || 'Request failed');error.status=response.status;throw error;}
+    return data;
+  }
+  function setBusy(on){busy=on;save.disabled=on || !currentSha;reload.disabled=on;editor.disabled=on;}
+  async function load(force=false){
+    if(busy)return;
+    if(!force && currentSha && editor.value!==savedContent && !confirm('Ada perubahan yang belum disimpan. Ganti dengan versi GitHub terbaru?'))return;
+    setBusy(true);notify('Mengambil versi terbaru langsung dari repository GitHub...');
+    try {
+      const item=await apiCall(api+'?ref=main&t='+Date.now(),{headers:{Accept:'application/vnd.github+json'}});
+      if(item.type!=='file' || item.encoding!=='base64')throw new Error('Berkas yang diterima tidak sesuai.');
+      const content=utf8FromBase64(item.content);
+      currentSha=item.sha;savedContent=content;editor.value=content;preview.textContent=content;
+      version.textContent='Versi: '+item.sha.slice(0,8);
+      notify('✓ File berhasil dimuat. Silakan ubah isinya.','success');
+    }catch(err){notify('Gagal membaca file: '+err.message,'error');}
+    finally{setBusy(false);}
+  }
+  editor.addEventListener('input',()=>{
+    preview.textContent=editor.value||'(file kosong)';
+    notify(editor.value===savedContent?'Tidak ada perubahan dari versi tersimpan.':'Perubahan belum tersimpan. Klik Simpan permanen.','info');
+  });
+  reload.addEventListener('click',()=>load(false));
+  save.addEventListener('click',async()=>{
+    if(busy||!currentSha)return;
+    if(editor.value===savedContent){notify('Tidak ada perubahan untuk disimpan.','info');return;}
+    if(editor.value.length>30000){notify('Contoh editor ini membatasi teks hingga 30.000 karakter.','error');return;}
+    const secret=token.value.trim();
+    if(!secret){notify('Masukkan fine-grained GitHub token dahulu agar file dapat disimpan permanen.','error');token.focus();return;}
+    if(!confirm('Simpan perubahan sebagai commit baru di repository publik oscar-sinaga/website?'))return;
+    setBusy(true);notify('Mengecek versi terbaru dan membuat commit GitHub...');
+    try {
+      const current=await apiCall(api+'?ref=main&t='+Date.now(),{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+secret}});
+      if(current.sha!==currentSha)throw Object.assign(new Error('Ada perubahan baru di GitHub. Gunakan Muat versi terbaru, lalu periksa sebelum menyimpan ulang.'),{status:409});
+      const body={message:'Update catatan via demo web editor',content:base64FromUtf8(editor.value),sha:currentSha,branch:'main'};
+      const result=await apiCall(api,{method:'PUT',headers:{Accept:'application/vnd.github+json','Content-Type':'application/json',Authorization:'Bearer '+secret,'X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify(body)});
+      currentSha=result.content.sha;savedContent=editor.value;
+      version.textContent='Versi: '+currentSha.slice(0,8);
+      const sha=result.commit&&result.commit.sha;
+      status.textContent='';
+      const strong=document.createElement('strong');strong.textContent='✓ Berhasil disimpan permanen! ';
+      status.appendChild(strong);
+      status.append('Perubahan sudah menjadi commit GitHub. ');
+      if(sha){const a=document.createElement('a');a.href='https://github.com/oscar-sinaga/website/commit/'+encodeURIComponent(sha);a.textContent='Lihat commit ↗';a.target='_blank';a.rel='noopener noreferrer';status.appendChild(a);}
+      status.dataset.type='success';
+    }catch(err){
+      let msg=err.message;
+      if(err.status===401)msg='Token tidak valid atau kedaluwarsa.';
+      if(err.status===403)msg='GitHub menolak izin. Pastikan token memiliki Contents: Read and write untuk repository website.';
+      if(err.status===404)msg='File/repository tidak ditemukan atau token tidak memiliki akses.';
+      if(err.status===409)msg='Konflik versi: '+err.message;
+      notify('Gagal menyimpan: '+msg,'error');
+    }finally{
+      token.value='';
+      setBusy(false);
+    }
+  });
+  load(true);
+})();
+</script>
+</body></html>
