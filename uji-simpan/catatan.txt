@@ -1,0 +1,6 @@
+Halo! Ini adalah file teks sungguhan di repository oscar-sinaga/website.
+
+Silakan ubah catatan ini dari halaman editor, lalu klik Simpan Permanen.
+Setiap penyimpanan akan membuat commit baru di GitHub.
+
+Catatan: Semua perubahan file ini bersifat publik setelah deployment.
