@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#081427"><title>Website Projects — Oscar Sinaga</title>
+<style>
+:root{color-scheme:dark;--bg:#081427;--muted:#aab9d2;--fg:#eff7ff;--accent:#64c9ff}
+*{box-sizing:border-box}body{min-height:100vh;margin:0;background:radial-gradient(ellipse at 85% 0%,#17437a 0%,transparent 50%),var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
+main{max-width:1000px;margin:auto;padding:80px 26px}header small{color:#8ddaff;letter-spacing:.2em;font-weight:700}h1{font-size:clamp(2.5rem,6vw,4.5rem);line-height:1.1;letter-spacing:-.05em;margin:14px 0}p{color:var(--muted);max-width:640px}input{width:100%;margin:35px 0 24px;padding:17px 20px;border-radius:14px;border:1px solid #ffffff3b;background:#101f38;color:white;font:inherit;outline-offset:3px}input:focus{outline:2px solid var(--accent)}
+.projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}.project{padding:28px;text-decoration:none;color:inherit;background:#152540;border:1px solid #ffffff25;border-radius:20px;transition:transform .2s,border-color .2s}.project:hover,.project:focus-visible{transform:translateY(-3px);border-color:#64c9ff}.project .icon{font-size:2rem}.project h2{margin:16px 0 6px;font-size:1.25rem}.project p{margin:0 0 18px;font-size:.93rem}.project .open{color:var(--accent);font-weight:700;font-size:.9rem}footer{color:#7b92b2;border-top:1px solid #ffffff1f;margin-top:70px;padding-top:20px;font-size:.85rem}
+</style></head>
+<body><main><header><small>OSCAR SINAGA • PROJECT DIRECTORY</small><h1>Website &amp; Projects</h1><p>Satu tempat untuk menjelajahi website dan eksperimen pengembangan. Semua proyek di bawah folder repository <strong>website</strong>.</p></header>
+<label for="search">Cari proyek</label><input id="search" type="search" autocomplete="off" placeholder="Cari website atau eksperimen...">
+<section class="projects" id="projects">
+<a class="project" href="./task-force-database-pages/" data-title="task force database governance assessment"><div class="icon" aria-hidden="true">📊</div><h2>Task Force Database</h2><p>Dokumentasi mendalam tahapan 1–7, diagram, penilaian struktur database dan tata kelola.</p><span class="open">Buka website ↗</span></a>
+<a class="project" href="./tes-deploy/" data-title="static deploy lab tes deploy html css javascript"><div class="icon" aria-hidden="true">⚡</div><h2>Static Deploy Lab</h2><p>Halaman eksperimen HTML, CSS, dan JavaScript untuk menguji penerbitan otomatis.</p><span class="open">Buka website ↗</span></a>
+</section><p id="empty" hidden>Tidak ada proyek yang cocok.</p><footer>Oscar Sinaga · Hosted on GitHub Pages</footer>
+</main><script>
+const input=document.querySelector('#search'),cards=[...document.querySelectorAll('.project')],empty=document.querySelector('#empty');
+input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();let count=0;for(const card of cards){const match=(card.dataset.title+' '+card.textContent).toLowerCase().includes(q);card.hidden=!match;if(match)count++}empty.hidden=count>0});
+</script></body></html>
