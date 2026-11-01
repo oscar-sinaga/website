@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "baseline_date": "2026-11-01",
+  "last_reviewed": "2026-11-01",
+  "last_material_change": "2026-11-01",
+  "status": "baseline",
+  "method": "Curated editorial snapshot; not representative vacancy census. New updates require verified source, effective date and relevant skill implication.",
+  "summary": "Baseline 2026: Python/SQL, statistical reasoning, data quality, AI agent evaluation and English tetap diprioritaskan; business/domain dipilih selektif.",
+  "entries": [
+    {
+      "date": "2026-10-27",
+      "category": "AI jobs",
+      "title": "AI literacy disebut lebih sering pada lowongan LinkedIn",
+      "finding": "LinkedIn melaporkan share posting yang mensyaratkan AI literacy naik sekitar 65% dalam 12 bulan; angka ini berdasarkan data LinkedIn.",
+      "impact": "Pertahankan pendalaman AI agent + evaluasi, bukan hanya prompting.",
+      "sources": [
+        "https://news.linkedin.com/2026/linkedin-data-shows-where-opportunity-is-emerging-as-work-changes"
+      ]
+    },
+    {
+      "date": "2026-03-05",
+      "category": "AI & employment",
+      "title": "AI exposure berbeda dari displacement",
+      "finding": "Anthropic menemukan belum ada kenaikan pengangguran sistematis pada profesi berpaparan AI tinggi dalam data yang dianalisis, tetapi ada indikasi perlambatan perekrutan junior.",
+      "impact": "Jangan berasumsi ada pekerjaan yang pasti aman; tingkatkan transferabilitas dan proof of work.",
+      "sources": [
+        "https://www.anthropic.com/research/labor-market-impacts"
+      ]
+    },
+    {
+      "date": "2026",
+      "category": "Indonesia",
+      "title": "SQL dan Python tetap diperlukan menurut sampel lowongan",
+      "finding": "Komdigi mengolah sampel 2.078 lowongan (Maret–Juli 2025); SQL/Python muncul lintas role, sampel bukan total pasar 2026.",
+      "impact": "Python, SQL, testing dan statistical/data reasoning tetap menjadi pondasi.",
+      "sources": [
+        "https://bpsdm.komdigi.go.id/publikasi_2355_3_358"
+      ]
+    },
+    {
+      "date": "2026-01-09",
+      "category": "Agent engineering",
+      "title": "Evaluasi agent perlu kasus nyata dan beberapa tipe grader",
+      "finding": "Anthropic menyarankan code-based, model-based dan human graders; 20–50 tugas nyata sudah berguna sebagai awal.",
+      "impact": "Prioritaskan agent evals, tool safety, tracing dan failure analysis di roadmap.",
+      "sources": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    }
+  ],
+  "changes_since_last_review": [],
+  "repository": "oscar-sinaga/website",
+  "directory": "career-roadmap"
+}
