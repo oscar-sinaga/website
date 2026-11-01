@@ -1,0 +1,317 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08121e"><meta name="description" content="Panduan lengkap dan interaktif menggunakan Career Decision Lab: 260 subskill, level D0–D4, strategi 3–5 tahun, roadmap 52 minggu, sprint adaptif, riset pasar kerja dan backup."><title>Panduan Lengkap — Career Decision Lab</title><style>
+:root{color-scheme:dark;--bg:#08121e;--surface:#112539;--surface2:#142c42;--ink:#f3f8fd;--muted:#b3c7d7;--soft:#8da7bb;--accent:#63c4fa;--accent2:#78e4d5;--border:#2d4b63;--shadow:0 12px 30px #0003}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 80% 0,#164365,transparent 32%),var(--bg);font:15px/1.75 system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink)}
+button,input,select{font:inherit}a{color:#8bd7ff}a:hover{color:#fff}a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{display:flex;min-height:100vh}.side{position:sticky;top:0;height:100vh;width:276px;flex:none;overflow:auto;background:#091827;padding:25px 17px;border-right:1px solid var(--border)}.logo{display:flex;gap:11px;align-items:center;margin-bottom:26px}.logo-icon{height:43px;width:43px;border-radius:13px;background:linear-gradient(130deg,#76d9fc,#477bc7);display:grid;place-items:center;color:#071827;font-weight:900;font-size:20px}.logo strong{display:block;font-size:15px;line-height:1.3}.logo small{font-size:11px;color:var(--soft)}.back{display:flex;align-items:center;gap:7px;text-decoration:none;border:1px solid #385a70;border-radius:10px;padding:10px 12px;margin:0 0 25px;color:#b8e4fc;font-weight:750;font-size:12px}.back:hover{background:#193d55}
+.side-label{text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:#93b4ca;font-weight:900;margin:20px 0 9px}.side-nav a{display:block;padding:8px 10px;border-radius:8px;color:#b8c9da;text-decoration:none;font-size:12px;line-height:1.3}.side-nav a:hover,.side-nav a.active{background:#183a55;color:#c0f0ff}.side-foot{font-size:11px;color:var(--soft);border-top:1px solid #2b4659;padding:14px 4px;margin-top:24px}
+main{min-width:0;flex:1;max-width:1320px;margin:auto;padding:35px clamp(20px,4vw,64px) 100px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:850}.hero h1{font-size:clamp(34px,4.3vw,54px);letter-spacing:-.05em;line-height:1.13;margin:12px 0}.hero p{color:var(--muted);font-size:16px;max-width:870px}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 28px}.button{display:inline-flex;align-items:center;justify-content:center;border:1px solid #5684a2;background:#193750;color:#e5f7ff;border-radius:11px;padding:10px 16px;text-decoration:none;font-weight:800;cursor:pointer;font-size:13px}.button.primary{background:linear-gradient(120deg,#1684b9,#2973a2);border-color:#43a7d1;color:white}.button:hover{background:#266080}.button.ghost{background:transparent;color:var(--muted)}
+.hero-rule{border-left:3px solid var(--accent);background:#10283b;border-radius:0 12px 12px 0;padding:13px 17px;color:#d2e5f3;margin:20px 0 30px;font-size:13px}
+.card{border:1px solid var(--border);border-radius:17px;background:linear-gradient(135deg,#132c43,#0d2032);padding:22px;box-shadow:var(--shadow)}.sectiontitle{font-size:23px;margin:0 0 5px;letter-spacing:-.035em}.subhead{font-size:12px;color:var(--muted);margin:0 0 17px}.pill{display:inline-block;border-radius:99px;padding:4px 9px;background:#1e4860;border:1px solid #4086a8;color:#b7eaff;font-size:10px;letter-spacing:.07em;font-weight:850;text-transform:uppercase}
+.guided{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin:20px 0 32px}.checkitems{display:grid;grid-template-columns:1fr 1fr;gap:9px}.checkitem{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;border:1px solid #34566d;border-radius:10px;background:#142c3e;cursor:pointer;font-size:12px;color:#d1e2ee}.checkitem input{accent-color:#52bdd6;min-width:18px;min-height:18px;margin-top:2px}.checkitem strong{display:block}.checkitem small{display:block;color:var(--soft);line-height:1.5}.checkitem:has(input:checked){border-color:#4eaaab;background:#164145}.bar{width:100%;height:9px;background:#284457;border-radius:20px;overflow:hidden;margin:13px 0}.bar>span{display:block;width:0;height:100%;background:linear-gradient(90deg,#4b99d7,#77e0ca);transition:width .2s}.checkcount{font-size:12px;color:#b6d2df}
+.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:10px;color:#b7cee0;text-transform:uppercase;font-weight:850;letter-spacing:.09em}.field select,.field input{width:100%;background:#0a1a29;color:#f2f9ff;border:1px solid #45657c;border-radius:9px;padding:9px 11px;min-height:41px}.selectorgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.suggest{margin-top:14px;padding:15px;border:1px solid #38617b;background:#102b41;border-radius:10px;font-size:12px}.suggest strong{display:block;color:#9be6ff;margin-bottom:6px}.suggest p{margin:0;color:#d3e3f0}
+.glossary{margin:18px 0 35px}.glossary input{background:#0d2134;border:1px solid #3d5e77;border-radius:10px;color:white;width:100%;padding:12px}.glossary-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px}.term{background:#10263a;border:1px solid #314f64;border-radius:10px;padding:13px}.term strong{display:block;color:#c2eaff;font-size:13px}.term p{font-size:12px;color:#afc5d5;margin:4px 0 0}
+.guide-section{scroll-margin-top:24px;background:linear-gradient(145deg,#11283b,#0b1e2d);border:1px solid #28455b;border-radius:17px;padding:23px clamp(17px,2.7vw,32px);margin:24px 0}.guide-section h2{font-size:24px;line-height:1.27;letter-spacing:-.04em;margin:4px 0 17px}.guide-section h3{font-size:17px;margin:25px 0 9px}.section-number{font-size:10px;letter-spacing:.16em;font-weight:850;color:var(--accent2)}.guide-section p,.guide-section li{color:#cadbe7;font-size:13px}.guide-section p{margin:12px 0}.guide-section ul,.guide-section ol{padding-left:24px;margin:10px 0 18px}.guide-section li{margin:7px 0}.guide-section strong{color:white}.guide-section .note,.note{padding:13px 16px;border-left:3px solid #63c4fa;background:#1b3950;border-radius:0 9px 9px 0;color:#d2e5f1;font-size:13px;margin:12px 0 16px}
+.tablewrap{max-width:100%;overflow-x:auto;border:1px solid #38536a;border-radius:12px;margin:16px 0}table{border-collapse:collapse;width:100%;min-width:510px;font-size:12px}th{text-align:left;color:#c2eafd;background:#183a53;padding:12px;font-weight:850}td{padding:11px 12px;color:#c8dbe8;border-top:1px solid #2a4559;vertical-align:top}tr:nth-child(even) td{background:#10273a}td:first-child{font-weight:650}
+.foot{margin-top:40px;padding:20px 0;border-top:1px solid #34506a;color:var(--soft);font-size:12px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.mobile-toc{display:none}
+@media(max-width:1100px){.side{width:234px}.guided{grid-template-columns:1fr}.glossary-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:750px){.wrap{display:block}.side{position:relative;width:auto;height:auto;padding:14px 16px;overflow:visible}.logo{margin-bottom:8px}.side-label,.side-nav,.side-foot{display:none}.back{max-width:max-content;margin:0}.mobile-toc{display:block;margin:12px 0}.mobile-toc summary{cursor:pointer;color:#cce8f9}.mobile-toc a{display:block;color:#b9d5e7;padding:6px 0;font-size:12px}main{padding:24px 14px 65px}.guided{grid-template-columns:1fr}.checkitems{grid-template-columns:1fr}.glossary-list{grid-template-columns:1fr}.guide-section{padding:19px 17px}.hero h1{font-size:34px}}
+</style></head><body><div class="wrap"><aside class="side"><div class="logo"><div class="logo-icon">?</div><div><strong>Career Decision Lab</strong><small>PANDUAN PENGGUNAAN</small></div></div><a class="back" href="./">← Kembali ke aplikasi</a><div class="side-label">Daftar bagian</div><nav class="side-nav" aria-label="Daftar isi"><a href="#bagian-a">A. Model mental: untuk apa tiap menu?</a>
+<a href="#bagian-b">B. Memulai pertama kali dalam 30–45 menit</a>
+<a href="#bagian-c">C. Memahami kontrol di bagian atas</a>
+<a href="#bagian-d">D. Master Skill Map: 260 subskill dan level D0–D4</a>
+<a href="#bagian-e">E. Bagaimana skor prioritas dihitung?</a>
+<a href="#bagian-f">F. Domain bisnis: satu jangkar, dasar yang portable</a>
+<a href="#bagian-g">G. Strategi 3–5 tahun</a>
+<a href="#bagian-h">H. Roadmap 12 bulan / 52 minggu</a>
+<a href="#bagian-i">I. Sprint 8–12 minggu: pekerjaan sekarang</a>
+<a href="#bagian-j">J. Analisis lowongan dan Market Pulse</a>
+<a href="#bagian-k">K. Ritme 4, 8 atau 12 jam per minggu</a>
+<a href="#bagian-l">L. Contoh alur dari pengalaman engineering yang sudah ada</a>
+<a href="#bagian-m">M. Backup, keamanan dan perangkat</a>
+<a href="#bagian-n">N. FAQ</a>
+<a href="#bagian-o">O. Tanda roadmap benar-benar membantu</a></nav><details class="mobile-toc"><summary>☷ Daftar isi panduan</summary><a href="#bagian-a">A. Model mental: untuk apa tiap menu?</a>
+<a href="#bagian-b">B. Memulai pertama kali dalam 30–45 menit</a>
+<a href="#bagian-c">C. Memahami kontrol di bagian atas</a>
+<a href="#bagian-d">D. Master Skill Map: 260 subskill dan level D0–D4</a>
+<a href="#bagian-e">E. Bagaimana skor prioritas dihitung?</a>
+<a href="#bagian-f">F. Domain bisnis: satu jangkar, dasar yang portable</a>
+<a href="#bagian-g">G. Strategi 3–5 tahun</a>
+<a href="#bagian-h">H. Roadmap 12 bulan / 52 minggu</a>
+<a href="#bagian-i">I. Sprint 8–12 minggu: pekerjaan sekarang</a>
+<a href="#bagian-j">J. Analisis lowongan dan Market Pulse</a>
+<a href="#bagian-k">K. Ritme 4, 8 atau 12 jam per minggu</a>
+<a href="#bagian-l">L. Contoh alur dari pengalaman engineering yang sudah ada</a>
+<a href="#bagian-m">M. Backup, keamanan dan perangkat</a>
+<a href="#bagian-n">N. FAQ</a>
+<a href="#bagian-o">O. Tanda roadmap benar-benar membantu</a></details><div class="side-foot">Dokumen bersumber dari PANDUAN.md. Progress checklist panduan terpisah dari progres roadmap utama.<p><a href="https://github.com/oscar-sinaga/website/blob/main/career-roadmap/PANDUAN.md" target="_blank" rel="noopener noreferrer">Lihat sumber Markdown ↗</a></p></div></aside><main><section class="hero"><span class="eyebrow">User manual · 2026/2027</span><h1>Pahami roadmap.<br>Belajar dengan <span style="color:#63c4fa">arah yang jelas.</span></h1><p>Panduan untuk memutuskan skill mana yang harus dipelajari sekarang, bagaimana menilai kemampuan aktual, memakai rencana jangka panjang dan sprint, serta menghindari rasa kewalahan akibat perubahan AI dan pasar kerja.</p><div class="hero-actions"><a href="./" class="button primary">Buka aplikasi roadmap ↗</a><a href="#bagian-b" class="button">Mulai tutorial pertama</a><a href="https://github.com/oscar-sinaga/website/blob/main/career-roadmap/PANDUAN.md" class="button ghost" target="_blank" rel="noopener noreferrer">Baca panduan versi teks ↗</a></div><div class="hero-rule"><strong>Pegangan utama:</strong> 260 subskill adalah pilihan, bukan kewajiban. Jangan mulai dari seluruh peta. Mulailah dari profesi → 10–20 skill nyata → target kedalaman → satu sprint → bukti kerja → review.</div></section><section class="guided" aria-label="Tutorial interaktif"><div class="card"><span class="pill">Checklist onboarding</span><h2 class="sectiontitle">8 langkah pertama</h2><p class="subhead">Centang saat sudah dilakukan di aplikasi utama. Checklist di halaman ini hanya panduan dan tidak mengubah rating asli.</p><div class="checkitems" id="checkItems"></div><div class="bar"><span id="guideMeter"></span></div><div class="checkcount" id="guideCount"></div><button id="guideReset" class="button ghost" style="margin-top:12px">Reset checklist panduan</button></div><div class="card"><span class="pill">Simulasi pembelajaran</span><h2 class="sectiontitle">Contoh fokus belajarnya</h2><p class="subhead">Pilih skenario untuk membaca contoh praktis. Ini **tidak** mengubah data aplikasi utama.</p><div class="selectorgrid"><div class="field"><label for="guideRole">Jalur profesi</label><select id="guideRole"><option value="hybrid">Hybrid Data + Agentic AI</option><option value="ai">AI / Agent Engineer</option><option value="ds">Data Scientist</option><option value="de">Data Engineer</option><option value="ml">ML Engineer</option><option value="analytics">Product Data Analyst</option></select></div><div class="field"><label for="guideHours">Waktu per minggu</label><select id="guideHours"><option value="4">4 jam</option><option value="8" selected>8 jam</option><option value="12">12 jam</option><option value="16">16 jam</option></select></div></div><div class="suggest"><strong>Contoh rencana dari pilihan di atas</strong><p id="sampleResult"></p></div><a href="./" class="button primary" style="margin-top:17px;width:100%">Terapkan pilihan di aplikasi ↗</a></div></section><section class="glossary card"><span class="pill">Glosarium</span><h2 class="sectiontitle">Istilah yang sering muncul</h2><p class="subhead">Cari istilah agar lo lebih mudah membaca kartu skill, rencana belajar dan skor prioritas.</p><label class="sr-only" for="glossarySearch">Cari istilah</label><input id="glossarySearch" type="search" placeholder="Misalnya: D3, fast-track, causal, market pulse, localStorage..."><div id="glossaryList" class="glossary-list"></div></section><aside class="note">Panduan versi 1 November 2026. <a href="https://oscar-sinaga.github.io/website/career-roadmap/" target="_blank" rel="noopener noreferrer">Buka aplikasi</a> | <a href="https://oscar-sinaga.github.io/website/career-roadmap/panduan.html" target="_blank" rel="noopener noreferrer">Panduan interaktif</a>. Sistem ini adalah alat bantu keputusan belajar; bukan prediksi peluang kerja, jaminan aman dari AI, atau sertifikasi keahlian.</aside>
+<section class="guide-section" id="bagian-a"><div class="section-number">BAGIAN 01</div><h2>A. Model mental: untuk apa tiap menu?</h2>
+<div class="tablewrap"><table><thead><tr><th>Menu</th><th>Pertanyaan</th><th>Kapan digunakan</th></tr></thead><tbody>
+<tr><td>Ringkasan</td><td>Apa lima prioritas terbesar, apa progresnya?</td><td>Awal minggu</td></tr>
+<tr><td>Master Skill Map</td><td>Apa level sekarang, target dan gap per subskill?</td><td>Saat diagnosis dan evaluasi</td></tr>
+<tr><td>Strategi 3–5 tahun</td><td>Ingin menjadi profesional seperti apa?</td><td>Kuartalan</td></tr>
+<tr><td>Roadmap 12 bulan</td><td>Modul apa berurutan dan hasil nyatanya?</td><td>Mingguan/bulanan</td></tr>
+<tr><td>Sprint 8–12 minggu</td><td>Apa yang dikerjakan mulai sekarang?</td><td>Setiap sesi/minggu</td></tr>
+<tr><td>Analisis lowongan</td><td>Skill apa yang muncul pada posisi target?</td><td>8–12 minggu</td></tr>
+<tr><td>Riset &amp; sumber</td><td>Bukti terbaru AI dan pasar kerja?</td><td>Saat ada update penting</td></tr>
+<tr><td>Data &amp; pengaturan</td><td>Kapan mulai, simpan atau pulihkan progres?</td><td>Awal dan setiap backup</td></tr>
+</tbody></table></div>
+<p><strong>Jangan menilai semua 260 subskill sebagai 260 kewajiban.</strong> Peta memiliki 16 kelompok dan mencakup hal yang inti, berdekatan, opsional, serta domain yang tidak perlu sekarang. Roadmap operasional hanya memuat 52 modul mingguan. Strategi 3–5 tahun menambah arah, bukan mengalokasikan semua skill ke jadwal terpisah.</p>
+</section>
+<section class="guide-section" id="bagian-b"><div class="section-number">BAGIAN 02</div><h2>B. Memulai pertama kali dalam 30–45 menit</h2>
+<ol>
+<li><strong>Menit 0–5:</strong> pilih jalur utama (misalnya Hybrid Data + Agentic AI), negara yang dituju (misalnya Singapore), 8 jam belajar per minggu, English 15 menit sehari, fokus Seimbang, dan domain bisnis credit risk/lending. Pilihan ini tidak berarti sudah mendapat visa atau peluang pekerjaan.</li>
+<li><strong>Menit 5–20:</strong> buka Master Skill Map. Mulai dari filter 35 prioritas teratas dan nilai hanya 10–20 subskill yang benar-benar pernah dipraktikkan. Contoh: Python debugging, SQL JOIN, statistical inference, Airflow, Docker, FastAPI, agent tool calling, evaluation, English speaking.</li>
+<li><strong>Menit 20–25:</strong> tentukan target per skill. Biarkan “Ikuti jalur” untuk rekomendasi awal, atau pilih target D0–D4 secara manual. Target D0 berarti sengaja menunda, bukan mengaku tidak mampu.</li>
+<li><strong>Menit 25–30:</strong> baca strategi 3–5 tahun dan bukti yang perlu dihasilkan tiap kuartal. Jangan centang checkpoint tanpa bukti.</li>
+<li><strong>Menit 30–40:</strong> pilih sprint 8 atau 12 minggu, baca kartu minggu pertama dan rancang deliverable yang bisa diuji. Mulai satu tugas, bukan sepuluh kursus.</li>
+<li><strong>Menit 40–45:</strong> buka Data &amp; Pengaturan, tekan Export JSON, simpan backup dengan aman.</li>
+</ol>
+<p>Jalur utama boleh berubah setelah evaluasi pekerjaan nyata. Satu tahap diperdalam pada suatu waktu; materi lain bisa tetap dijaga dengan latihan ringan.</p>
+</section>
+<section class="guide-section" id="bagian-c"><div class="section-number">BAGIAN 03</div><h2>C. Memahami kontrol di bagian atas</h2>
+<ul>
+<li><strong>Jalur utama:</strong> memilih profil target kedalaman dan mengubah urutan 12 fase pembelajaran. Tersedia Hybrid Data + Agentic AI, AI / Agent Engineer, Applied / Decision Data Scientist, Data / Analytics Engineer, ML / MLOps Engineer, dan Product Data Analyst / Analytics.</li>
+<li><strong>Negara tujuan:</strong> saat ini terutama mengurutkan tautan pencarian pekerjaan. Belum menghitung bobot kebutuhan skill atau sponsor visa khusus negara.</li>
+<li><strong>Jam per minggu (4–16):</strong> menetapkan anggaran kerja inti (maksimal 4 jam) dan waktu pendalaman tambahan. Angka ini belum otomatis mempersingkat 52 minggu.</li>
+<li><strong>English per hari (0–30 menit):</strong> target kebiasaan tambahan, tidak otomatis menjadi latihan audio atau penguji kemampuan speaking.</li>
+<li><strong>Fokus prioritas:</strong> Seimbang, Pasar kerja, Fondasi tahan lama, atau Business &amp; job fit. Ini mengubah bobot skor, bukan perhitungan risiko masa depan.</li>
+<li><strong>Domain bisnis:</strong> pilih satu domain jangkar (misalnya credit risk, collection, marketing, SaaS, F&amp;B, marketplace, logistics, healthcare, insurance, atau B2B). Domain lain tetap tersimpan sebagai backlog.</li>
+</ul>
+</section>
+<section class="guide-section" id="bagian-d"><div class="section-number">BAGIAN 04</div><h2>D. Master Skill Map: 260 subskill dan level D0–D4</h2>
+<p>Ada dua kolom berbeda pada setiap skill:</p>
+<p><strong>Level sekarang</strong> adalah bukti kemampuan diri. <strong>Target kedalaman</strong> adalah tujuan belajar. Keduanya tidak harus sama dan dapat berubah sesuai profesi target.</p>
+<div class="tablewrap"><table><thead><tr><th>Level</th><th>Arti praktik</th><th>Contoh</th></tr></thead><tbody>
+<tr><td>D0</td><td>Belum belajar atau belum mampu</td><td>Belum pernah membuat tool calling</td></tr>
+<tr><td>D1</td><td>Kenal konsep dan kegunaannya</td><td>Tahu apa itu function calling</td></tr>
+<tr><td>D2</td><td>Bisa menjalankan kasus umum dengan bantuan dokumentasi/AI</td><td>Membuat agent demo yang memakai API</td></tr>
+<tr><td>D3</td><td>Mandiri menyelesaikan, men-debug, menguji dan menjelaskan kasus umum</td><td>Membuat agent dengan validasi input, failure tests dan evaluasi</td></tr>
+<tr><td>D4</td><td>Mendalam dalam trade-off, kasus sulit, kompleksitas dan failure mode</td><td>Menginvestigasi keamanan, reliabilitas dan evaluasi agent production</td></tr>
+</tbody></table></div>
+<p><strong>Contoh keputusan:</strong></p>
+<ul>
+<li>Sudah pernah deploy FastAPI tetapi belum dapat debugging Python mandiri: FastAPI deployment mungkin D2, Python debugging D1/D2. Jangan memaksakan satu level keseluruhan.</li>
+<li>Pernah membuat DAG Airflow: biasanya memiliki pengalaman lebih dari D0, tetapi kemampuan backfill, idempotency dan incident response harus dinilai terpisah.</li>
+<li>SQL JOIN current D3, target D3: cukup maintenance.</li>
+<li>AI tool calling current D1, target D3: investasi utama, gap dua tingkat.</li>
+<li>Kafka internals current D0, target D0: tunda secara sadar.</li>
+</ul>
+<p>Jika ragu, biarkan status <strong>Belum dinilai</strong>. Aplikasi menggunakan asumsi sementara D1 hanya untuk menghitung gap, tetapi <strong>tidak menyimpan D1 sebagai kemampuan lo</strong>. Akibatnya, prioritas awal mungkin tampak terlalu tinggi sampai diagnosis dibuat.</p>
+<p><strong>Cara menghindari kewalahan:</strong> nilai 10–20 skill inti terlebih dahulu, tambah 5–10 skill per minggu bila berguna. Tidak perlu mengisi semua 260 dalam satu sesi.</p>
+</section>
+<section class="guide-section" id="bagian-e"><div class="section-number">BAGIAN 05</div><h2>E. Bagaimana skor prioritas dihitung?</h2>
+<p>Skor 0–100 adalah <strong>heuristik untuk urutan belajar</strong>, bukan probabilitas diterima kerja, gaji, atau skill aman dari AI. Pada mode Seimbang, bobotnya:</p>
+<div class="tablewrap"><table><thead><tr><th>Komponen</th><th>Bobot</th></tr></thead><tbody>
+<tr><td>Kedalaman target</td><td>25%</td></tr>
+<tr><td>Gap target dibanding kemampuan sekarang</td><td>30%</td></tr>
+<tr><td>Relevansi pasar menurut penilaian editorial kategori</td><td>16%</td></tr>
+<tr><td>Ketahanan konseptual</td><td>15%</td></tr>
+<tr><td>Transferabilitas</td><td>9%</td></tr>
+<tr><td>Sinyal keyword dari JD pribadi</td><td>5%</td></tr>
+</tbody></table></div>
+<p>Level target dan gap dinormalisasi ke skala D0–D4. Tiga indikator editorial dinormalisasi ke skala 1–5. JD memakai jumlah sebutan keyword di sampel lowongan yang <strong>lo pilih sendiri</strong>, bukan database statistik lowongan lengkap.</p>
+<p>Target D0 menghasilkan skor 0. Bila level sekarang sudah mencapai target, skor dikalikan 0,30 agar lebih cocok untuk maintenance. Misalnya target D3, current D1, seluruh indikator kategori 5/5 dan tanpa JD menghasilkan skor sekitar 74. Itu hanya berarti prioritas belajar relatif tinggi dalam asumsi tersebut.</p>
+<p><strong>Penting:</strong> parser JD hanya mengenali sejumlah pola keterampilan umum, bukan pemahaman semantik terhadap seluruh 260 subskill. Ia belum membedakan must-have, nice-to-have, senioritas, kalimat negasi atau sponsorship. Selalu baca sumber asli dan gunakan keputusan manual.</p>
+</section>
+<section class="guide-section" id="bagian-f"><div class="section-number">BAGIAN 06</div><h2>F. Domain bisnis: satu jangkar, dasar yang portable</h2>
+<p>Business fundamentals yang dapat dipindahkan antarindustri: P&amp;L, revenue, margin, cash flow, unit economics, customer economics, pricing, risk-return, decision making, product metrics dan stakeholder management.</p>
+<p>Domain spesifik memiliki asumsi berbeda: credit risk membahas underwriting, PD/LGD/EAD dan risiko portofolio; marketing membahas CAC, conversion dan lift; SaaS membahas churn, retention dan usage pricing; F&amp;B membahas food cost, waste dan forecasting. Belajar teori satu industri tidak sama dengan pengalaman industri lain.</p>
+<p><strong>Rekomendasi:</strong> pilih satu domain yang telah punya pengalaman nyata atau bukti lowongan kuat, jangan mendalami seluruh domain paralel. Domain tambahan dipelajari ketika jalur kerja atau proyek memerlukannya.</p>
+</section>
+<section class="guide-section" id="bagian-g"><div class="section-number">BAGIAN 07</div><h2>G. Strategi 3–5 tahun</h2>
+<p>Pilih horizon tiga tahun sebagai inti, atau lima tahun untuk menampilkan opsi jangka panjang. Ada empat checkpoint tiap tahun.</p>
+<ul>
+<li><strong>Tahun 1:</strong> fondasi portable dan bukti end-to-end data/AI.</li>
+<li><strong>Tahun 2:</strong> pendalaman satu cluster utama, reliability, kontribusi publik dan dampak.</li>
+<li><strong>Tahun 3:</strong> kalibrasi lowongan internasional, business decision ownership, interview dan transisi.</li>
+<li><strong>Tahun 4–5 (opsional):</strong> sistem lintas tim, kepemimpinan, product/business ownership, konsultansi atau alternatif lainnya.</li>
+</ul>
+<p>Setiap checkpoint memiliki teks sasaran, checkbox serta kolom catatan bukti/impact. <strong>Checkpoint kuartalan tidak otomatis selesai karena beberapa minggu pembelajaran sudah dicentang.</strong> Verifikasi secara manual dan tulis hasil yang bisa ditunjukkan.</p>
+</section>
+<section class="guide-section" id="bagian-h"><div class="section-number">BAGIAN 08</div><h2>H. Roadmap 12 bulan / 52 minggu</h2>
+<p>Roadmap memiliki dua belas fase sekitar 4–5 minggu: Python/SQL; statistics; LLM/tools; RAG/security/evals; pipelines/Airflow/dbt; data quality/cloud; ML evaluation; causal inference; business economics; production AI/MLOps; international interview; capstone.</p>
+<p><strong>Setiap kartu minggu</strong> berisi Pelajari → Praktikkan → Bukti/acceptance → Opsional → sumber → checkbox → catatan. Tandai selesai <strong>hanya setelah hasil diuji</strong>, bukan setelah menonton video.</p>
+<p>Mengubah jalur utama mengubah <strong>urutan fase</strong>, tetapi konten 52 modul masih sama. Jumlah jam mingguan mengubah porsi latihan inti/tambahan pada kartu, <strong>bukan otomatis menyusun ulang semua durasi</strong>. Jika 4 jam tidak cukup, lanjutkan tugas minggu berikut daripada mencentang palsu.</p>
+<p><strong>Fast-track</strong> akan menyembunyikan satu minggu bila <em>seluruh skill yang ditandai dalam modul tersebut</em> dinilai sudah memenuhi target. Ini adalah hasil self-assessment, bukan bukti formal modul selesai. Mematikan fast-track mengembalikan tampilan; progres selesai asli tidak terhapus.</p>
+</section>
+<section class="guide-section" id="bagian-i"><div class="section-number">BAGIAN 09</div><h2>I. Sprint 8–12 minggu: pekerjaan sekarang</h2>
+<p>Sprint menampilkan 8, 10 atau 12 <strong>modul pertama yang belum selesai</strong> dari urutan roadmap. Ada anggaran jam, rentang tanggal, overlay skill gap, review dan riwayat rekalibrasi.</p>
+<p><strong>Bukan</strong> mesin AI yang otomatis menyusun kurikulum baru dari nol. Skills prioritas memberi petunjuk penekanan, sedangkan backlog sprint tetap mengikuti urutan fase/prasyarat 52 modul.</p>
+<p>Contoh review akhir minggu:</p>
+<ul>
+<li><strong>Wins:</strong> 10 soal SQL JOIN lulus, dua test Python baru, README diperbarui.</li>
+<li><strong>Blockers:</strong> masih salah menghitung duplicate rows setelah JOIN.</li>
+<li><strong>Impact:</strong> notebook dan pipeline dapat diulang, hasil metrik konsisten.</li>
+<li><strong>Next:</strong> perdalam cardinality dan test; tunda belajar framework agent kedua.</li>
+</ul>
+<p>Tekan <strong>Rekalibrasi sprint</strong> jika ingin mencatat ulang tanggal, jalur, prioritas yang berubah. Ini membuat catatan lokal, bukan otomatis mengubah source GitHub atau mengirim informasi ke agent ChatGPT.</p>
+</section>
+<section class="guide-section" id="bagian-j"><div class="section-number">BAGIAN 10</div><h2>J. Analisis lowongan dan Market Pulse</h2>
+<p>Buka tautan LinkedIn, Jobstreet atau SEEK, lalu cek ketersediaan lowongan asli, senioritas, kebutuhan bahasa, dan eligibility visa/sponsorship. Cukup 10–20 lowongan awal yang <strong>representatif untuk target pribadi</strong>, bukan seluruh hasil pencarian.</p>
+<p>Masukkan judul, perusahaan, negara, URL, dan deskripsi publik ke Analisis Lowongan. Sistem mendeteksi keyword tertentu untuk memberi sinyal tambahan. <strong>Sinyal pribadi bukan survei pasar</strong>. Baca sendiri perbedaan must-have dan nice-to-have, dan jangan masukkan data rahasia perusahaan.</p>
+<p><strong>Market Pulse</strong> menampilkan sumber publik bertanggal. Itu feed editorial, <strong>bukan real-time scraping</strong>. Radar Karier &amp; GitHub mengecek bukti pasar dan perkembangan AI tiap Senin pagi WIB. Bila ada perubahan material dan alat GitHub tersedia, pembaruan publik dapat dilakukan; bila tidak ada perubahan penting, tidak ada keharusan commit. Perubahan besar/berisiko sebaiknya melalui PR untuk disetujui. Progres lokal tidak dibaca otomasi ini.</p>
+</section>
+<section class="guide-section" id="bagian-k"><div class="section-number">BAGIAN 11</div><h2>K. Ritme 4, 8 atau 12 jam per minggu</h2>
+<p>Gunakan pendekatan kira-kira 25% teori, 55% praktik dan 20% testing + catatan:</p>
+<div class="tablewrap"><table><thead><tr><th>Anggaran mingguan</th><th>Teori</th><th>Praktik</th><th>Test/review</th></tr></thead><tbody>
+<tr><td>4 jam</td><td>1 jam</td><td>2 jam 12 menit</td><td>48 menit</td></tr>
+<tr><td>8 jam</td><td>2 jam</td><td>4 jam 24 menit</td><td>1 jam 36 menit</td></tr>
+<tr><td>12 jam</td><td>3 jam</td><td>6 jam 36 menit</td><td>2 jam 24 menit</td></tr>
+</tbody></table></div>
+<p>English 10–20 menit per hari sebaiknya di luar jam teknis bila memungkinkan. Latih speaking menjelaskan trade-off, bukan hanya menghafal kosakata.</p>
+<p>Setiap minggu: rencanakan satu deliverable → praktikkan → cek acceptance → tulis bukti dan hambatan → centang bila valid. Setiap 8–12 minggu: cek pekerjaan target, skill gap, progress, dan keputusan untuk lanjut/pivot/tunda.</p>
+</section>
+<section class="guide-section" id="bagian-l"><div class="section-number">BAGIAN 12</div><h2>L. Contoh alur dari pengalaman engineering yang sudah ada</h2>
+<p>Contoh <strong>ilustratif</strong>, bukan penilaian personal: seseorang pernah memakai Airflow, Docker dan FastAPI, ingin peluang global Data Scientist / AI Engineer, namun masih memakai AI untuk debugging Python dan belum mendalami statistik.</p>
+<ol>
+<li>Pilih Hybrid Data + Agentic AI, Singapore, 8 jam, English 15 menit, credit risk.</li>
+<li>Nilai Python debugging D1–D2, FastAPI D2, Airflow D2, Docker D2, SQL JOIN D2/D3, AI tools D1, inference D1–D2 <strong>berdasarkan bukti tes sendiri</strong>.</li>
+<li>Targetkan Python debugging D3, SQL D3, agent tool-calling/evals D3, statistics D3. Kafka internals bisa target D0.</li>
+<li>Jalankan sprint 8 minggu, buat repo uji Python/SQL, kemudian agent dengan tool read-only, 30 kasus eval, dan catatan failure.</li>
+<li>Setelah delapan minggu, bandingkan JD AI Engineer dan DS yang relevan dengan senioritas dan izin kerja. Pilih pendalaman berikutnya berdasarkan bukti.</li>
+<li>Dokumentasikan bukan hanya “agent jalan”, tapi evaluasi, keamanan, waktu respons, biaya dan keputusan bisnis yang terbantu.</li>
+</ol>
+</section>
+<section class="guide-section" id="bagian-m"><div class="section-number">BAGIAN 13</div><h2>M. Backup, keamanan dan perangkat</h2>
+<p>Aplikasi bersifat <strong>static GitHub Pages</strong>. Kode sumber dan panduan ada di repository publik, tetapi ratings, notes, JD, milestone dan progress <strong>disimpan di localStorage browser saat ini</strong>, tidak otomatis tersimpan di GitHub maupun tersinkron antarperangkat.</p>
+<ul>
+<li><strong>Export JSON</strong> membuat backup seluruh konfigurasi/progres. Simpan privat.</li>
+<li><strong>Import JSON</strong> memulihkan backup, termasuk format lama yang didukung. Pastikan menggunakan file milik sendiri.</li>
+<li><strong>Reset</strong> menghapus progres lokal; Export dulu.</li>
+<li>Browser/profil/perangkat/incognito berbeda mungkin tidak memiliki data yang sama.</li>
+<li>Jangan unggah backup pribadi atau data internal perusahaan ke repository publik.</li>
+<li>Otomasi riset mingguan <strong>tidak</strong> mengambil data localStorage pribadi lo.</li>
+</ul>
+</section>
+<section class="guide-section" id="bagian-n"><div class="section-number">BAGIAN 14</div><h2>N. FAQ</h2>
+<p><strong>Apa semua 260 skill harus D3/D4?</strong> Tidak. Banyak skill memang D0 atau D1 sesuai jalur, dan tidak harus dinilai sekarang.</p>
+<p><strong>Mengapa skor belum dinilai tinggi?</strong> Model sementara mengasumsikan D1 saat menghitung gap. Isi self-assessment nyata agar ranking lebih tepat.</p>
+<p><strong>Mengapa negara tidak mengubah ranking skill?</strong> Country control saat ini memprioritaskan tautan lowongan, belum menghitung demand yang valid per negara.</p>
+<p><strong>Mengapa 4 jam dan 12 jam tetap 52 minggu?</strong> Karena jam belum membuat rescheduling kalender otomatis; deadline harus disesuaikan secara realistis oleh pengguna.</p>
+<p><strong>Mengapa sprint tidak mengambil 8 skill tertinggi?</strong> Sprint mengambil modul pertama yang belum selesai; skill gap hanya overlay.</p>
+<p><strong>Apakah Fast-track sama dengan Completed?</strong> Tidak. Fast-track mengikuti rating; Completed harus memiliki bukti deliverable.</p>
+<p><strong>Mengapa saya harus latihan Python bila bisa dibantu AI?</strong> Agar mampu memahami, debugging, menguji, dan mempertanggungjawabkan output, termasuk saat interview tanpa AI.</p>
+<p><strong>JD tidak terbaca semua skill?</strong> Parser hanya berbasis regex skill tertentu. Baca persyaratan asli, lalu override target manual.</p>
+<p><strong>Kenapa progress hilang di HP lain?</strong> Tidak ada cloud sync. Gunakan Export dari perangkat lama dan Import di perangkat baru.</p>
+<p><strong>Kenapa checkpoint strategi belum centang otomatis?</strong> Milestone kuartalan memerlukan validasi bukti sendiri.</p>
+<p><strong>Apakah GitHub otomatis update tiap Senin?</strong> Radar memeriksa sumber dan hanya mencoba update aman jika ada bukti material. Tidak ada jaminan commit setiap minggu.</p>
+<p><strong>Apakah aman mengisi JD internal perusahaan?</strong> Jangan. Gunakan deskripsi lowongan publik saja.</p>
+<p><strong>Mengapa roadmap 5 tahun tidak sedetail minggu tahun kedua?</strong> Tahun 2–5 bersifat strategis dan kondisional; rencana operasional rinci hanya 12 bulan agar tidak berpura-pura bisa meramalkan pasar bertahun-tahun ke depan.</p>
+<p><strong>Jika halaman error setelah update?</strong> Jangan langsung Reset. Export dulu bila memungkinkan; cek reload/browser berbeda, simpan pesan kesalahan tanpa secret, lalu laporkan langkah reproduksinya.</p>
+</section>
+<section class="guide-section" id="bagian-o"><div class="section-number">BAGIAN 15</div><h2>O. Tanda roadmap benar-benar membantu</h2>
+<p>Dalam empat minggu, seharusnya mampu menjawab:</p>
+<ol>
+<li>Apa 2–3 skill yang benar-benar diprioritaskan, beserta alasannya?</li>
+<li>Deliverable apa yang sudah dapat diuji atau dilihat?</li>
+<li>Apa yang bisa dijelaskan dan diperbaiki secara mandiri?</li>
+<li>Apa nilai analitis, engineering, atau bisnis dari output tersebut?</li>
+<li>Topik apa yang sengaja <strong>tidak</strong> dipelajari dulu, dan mengapa?</li>
+</ol>
+<p>Kalau belum jelas, jangan tambah lagi jumlah kursus. Perjelas prioritas, tes kemampuan, dan kriteria selesai.</p>
+<p><strong>Alur satu kalimat:</strong> tentukan pekerjaan → nilai 10–20 kemampuan yang relevan → pilih target kedalaman → lihat strategi → jalankan sprint → uji hasil → review lowongan → adaptasi → backup.</p>
+</section><footer class="foot">Career Decision Lab · Panduan statis, interaktif, dan bisa dibaca di browser. Materi dan sumber riset dievaluasi berkala; perubahan besar pada aplikasi perlu validasi terlebih dahulu. <a href="./">Kembali ke roadmap</a>.</footer></main></div><script>
+(function(){
+ "use strict";
+ var steps=[
+  ["Tentukan target","Role, negara, jam belajar, domain bisnis","bagian-b"],
+  ["Nilai kemampuan","10–20 subskill yang pernah dipraktikkan","bagian-d"],
+  ["Pilih target D0–D4","Periksa gap dan sengaja tunda skill lain","bagian-e"],
+  ["Lihat horizon panjang","Bukti per kuartal, bukan daftar kursus","bagian-g"],
+  ["Mulai sprint","Pilih 8/10/12 minggu dan deliverable pertama","bagian-i"],
+  ["Tentukan bukti","Test, notebook, memo, repo atau demo terverifikasi","bagian-h"],
+  ["Rencanakan review","Evaluasi progres dan lowongan setiap siklus","bagian-j"],
+  ["Backup pribadi","Export JSON sebelum pindah perangkat","bagian-m"]
+ ];
+ var key="career-roadmap-guide-checklist-v1", done={};
+ try{done=JSON.parse(localStorage.getItem(key)||"{}")||{};}catch(err){done={};}
+ var box=document.getElementById("checkItems"),meter=document.getElementById("guideMeter"),counter=document.getElementById("guideCount");
+ function update(){
+   var n=Object.keys(done).filter(function(k){return done[k]}).length;
+   meter.style.width=(n/steps.length*100)+"%";
+   counter.textContent=n+" dari "+steps.length+" langkah dicentang di halaman panduan ini";
+   try{localStorage.setItem(key,JSON.stringify(done));}catch(err){}
+ }
+ steps.forEach(function(step,i){
+   var label=document.createElement("label");label.className="checkitem";
+   var cb=document.createElement("input");cb.type="checkbox";cb.checked=!!done[i];cb.setAttribute("aria-label",step[0]);
+   cb.addEventListener("change",function(){done[i]=cb.checked;update();});
+   var content=document.createElement("span");
+   var strong=document.createElement("strong");strong.textContent=step[0];
+   var small=document.createElement("small");small.textContent=step[1];
+   content.appendChild(strong);content.appendChild(small);label.appendChild(cb);label.appendChild(content);box.appendChild(label);
+ });
+ document.getElementById("guideReset").addEventListener("click",function(){done={};Array.prototype.forEach.call(box.querySelectorAll("input"),function(cb){cb.checked=false;});update();});
+ update();
+ var profiles={
+  hybrid:{name:"Hybrid Data + Agentic AI",focus:"Python/SQL dan validasi output; AI tool calling/evaluations; data quality dan statistical reasoning.",project:"Satu proyek data → pipeline → agent read-only → evals → keputusan bisnis.",risk:"Jangan memulai lebih dari satu framework agent atau mengejar 260 skill sekaligus."},
+  ai:{name:"AI / Agent Engineer",focus:"Python backend, tool schemas, error handling, RAG, agent evals, security, observability.",project:"Agent tool calling dengan >=30 tes beragam, audit log dan failure report.",risk:"Demo chatbot saja belum cukup membuktikan engineering production."},
+  ds:{name:"Applied / Decision Data Scientist",focus:"SQL/Python, statistical inference, model validation, experimentation, causal reasoning.",project:"Studi data dengan baseline, uncertainty, leakage checks, eksperimen dan decision memo.",risk:"Nilai AUC atau plotting yang bagus belum membuktikan validitas keputusan."},
+  de:{name:"Data / Analytics Engineer",focus:"SQL, modelling/grain, quality checks, Airflow, idempotency, lineage dan cloud.",project:"Pipeline incremental PostgreSQL/Airflow/dbt dengan tests dan backfill.",risk:"Jangan menganggap pipeline sukses satu kali berarti sudah reliable."},
+  ml:{name:"ML / MLOps Engineer",focus:"Python, evaluation, model serving, CI/CD, monitoring, drift dan rollback.",project:"Model API dengan evaluasi, versioning dan production-lite monitor.",risk:"Perlu memahami model sekaligus reliability dan failure mode."},
+  analytics:{name:"Product Data Analyst / Analytics",focus:"SQL, metrics, exploratory investigation, experiment design, business communication.",project:"Metric layer + KPI audit + business decision memo dengan uncertainty.",risk:"Dashboard visual bagus saja belum menjamin kebenaran metrik."}
+ };
+ function suggestion(){
+  var role=document.getElementById("guideRole").value;
+  var hours=Number(document.getElementById("guideHours").value);
+  var p=profiles[role];
+  var text="Fokus: "+p.focus+" Contoh bukti: "+p.project+" Dengan "+hours+" jam/minggu, rencanakan sekitar "+Math.round(hours*.25*10)/10+" jam konsep, "+Math.round(hours*.55*10)/10+" jam praktik, dan "+Math.round(hours*.20*10)/10+" jam verifikasi. Perhatian: "+p.risk;
+  document.getElementById("sampleResult").textContent=text;
+ }
+ ["guideRole","guideHours"].forEach(function(id){document.getElementById(id).addEventListener("change",suggestion);});
+ suggestion();
+ var terms=[
+ ["D0","Belum mampu/belum belajar. Pada kolom target, D0 berarti sengaja tunda."],
+ ["D1","Kenal konsep dan tahu kegunaan; belum mandiri."],
+ ["D2","Dapat mengerjakan kasus umum dengan AI atau dokumentasi."],
+ ["D3","Mandiri membangun, menjelaskan, men-debug dan menguji kasus umum."],
+ ["D4","Mendalam pada trade-off, kegagalan kompleks dan perancangan."],
+ ["Gap","Jarak antara target kedalaman dan level yang lo nilai sekarang."],
+ ["Fast-track","Sembunyikan modul bila semua tag skill self-assessed mencapai target; bukan menyatakan done."],
+ ["Done","Deliverable sudah selesai dan diperiksa, bukan hanya menonton materi."],
+ ["Roadmap","Urutan fase dan 52 modul, dengan latihan, bukti, sumber."],
+ ["Sprint","8–12 minggu pertama yang belum selesai dari backlog roadmap."],
+ ["Rekalibrasi","Catat tanggal, prioritas dan keputusan berdasarkan progress saat itu."],
+ ["Market Pulse","Ringkasan editorial sumber publik bertanggal, bukan live scraping."],
+ ["Priority score","Heuristik untuk urutan belajar, bukan persentase keterima kerja."],
+ ["Job description (JD)","Persyaratan lowongan yang perlu dibaca berdasarkan role, senioritas dan sponsor."],
+ ["Must-have","Syarat inti lowongan; berbeda dari skill tambahan yang diinginkan."],
+ ["LocalStorage","Penyimpanan browser/perangkat; bukan cloud sync dan bukan repo publik."],
+ ["Export JSON","Mencadangkan seluruh state pribadi roadmap ke file."],
+ ["Import JSON","Memulihkan state pribadi dari backup pada browser yang dipilih."],
+ ["Business domain","Bidang bisnis spesifik seperti credit risk, collection, SaaS atau F&B."],
+ ["Unit economics","Revenue, biaya dan kontribusi pada tingkat transaksi/unit/pelanggan."],
+ ["Causal inference","Penalaran untuk mengestimasi efek tindakan dengan asumsi identifikasi yang jelas."],
+ ["MLOps","Pengelolaan model sejak eksperimen, deploy, monitoring hingga rollback."],
+ ["Agent evals","Pengujian kinerja agent pada tugas, tools, reliabilitas dan keselamatan."],
+ ["Data lineage","Pelacakan asal data, transformasi, dan tujuan metrik atau tabel."],
+ ["AI literacy","Kemampuan memahami, menggunakan, dan menguji AI pada pekerjaan terkait."],
+ ["Milestone","Sasaran antara yang sebaiknya mempunyai bukti keberhasilan."]
+ ];
+ var list=document.getElementById("glossaryList");
+ function renderGlossary(){
+  var q=document.getElementById("glossarySearch").value.toLowerCase().trim(),shown=0;
+  list.textContent="";
+  terms.forEach(function(t){
+    if(q && (t[0]+" "+t[1]).toLowerCase().indexOf(q)<0)return;
+    shown++;
+    var card=document.createElement("div");card.className="term";
+    var a=document.createElement("strong");a.textContent=t[0];
+    var b=document.createElement("p");b.textContent=t[1];
+    card.appendChild(a);card.appendChild(b);list.appendChild(card);
+  });
+  if(!shown){var no=document.createElement("p");no.className="subhead";no.textContent="Tidak ditemukan. Coba istilah lain.";list.appendChild(no);}
+ }
+ document.getElementById("glossarySearch").addEventListener("input",renderGlossary);
+ renderGlossary();
+ if("IntersectionObserver" in window){
+   var links=Array.prototype.slice.call(document.querySelectorAll(".side-nav a"));
+   var ob=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){
+        links.forEach(function(l){l.classList.toggle("active",l.getAttribute("href")==="#"+e.target.id);});
+      }});
+   },{rootMargin:"-15% 0px -72% 0px"});
+   Array.prototype.forEach.call(document.querySelectorAll(".guide-section"),function(s){ob.observe(s);});
+ }
+})();
+</script></body></html>
