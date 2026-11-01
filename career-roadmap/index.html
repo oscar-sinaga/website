@@ -115,17 +115,26 @@ el("overallMeter").style.width=doneRatio+"%";el("overallLabel").textContent=done
 el("studyRule").innerHTML=`Mulai dari <strong>${safe(top[0]?.name||"diagnosis skill")}</strong>; praktekkan lewat satu deliverable nyata. Target ${state.hours} jam/minggu dan English ${state.english} menit/hari.`;
 }
 function renderSkills(){
-const sorted=scores(), group=state.skillFilter||"all";
-el("groupSel").innerHTML=`<option value="all">Semua kategori (${skills.length})</option>`+D.groups.map(g=>`<option value="${g.id}">${safe(g.name)}</option>`).join("");el("groupSel").value=group;
-const search=(el("skillSearch").value||"").toLowerCase();
-const chosen=sorted.filter(s=>(group==="all"||s.group===group)&&(!search||s.name.toLowerCase().includes(search)||groupMap[s.group].name.toLowerCase().includes(search)));
-el("skillsCounter").textContent=`${chosen.length} subskill • ${assessed()} dinilai`;
-el("skillRows").innerHTML=chosen.map(s=>{
-const options=`<option value="" ${s.cur===null?"selected":""}>Belum dinilai</option>`+[0,1,2,3,4].map(d=>`<option value="${d}" ${s.cur===d?"selected":""}>D${d} — ${levelLabel(d).slice(5)}</option>`).join("");
-return `<div class="skillitem"><div class="skillmeta"><span class="eyebrow">${safe(groupMap[s.group].emoji+" "+groupMap[s.group].name)}</span><strong>${safe(s.name)}</strong><small>${s.mentions?"Tercantum di "+s.mentions+" JD pribadi • ":""}Target D${s.tgt} • Nilai prioritas model ${s.score}/100</small></div><div class="skillactions"><span class="target">D${s.tgt}</span><select aria-label="Kemampuan ${safe(s.name)}" data-level="${safe(s.id)}">${options}</select></div></div>`;
-}).join("")||"<p class='muted'>Tidak ada subskill cocok.</p>";
-const values=D.groups.map(g=>{const list=skills.filter(s=>s.group===g.id),rated=list.filter(s=>rating(s)!==null).length;const avg=list.reduce((sum,s)=>sum+(rating(s)===null?0:Math.min(1,rating(s)/Math.max(1,targetLevel(s)))),0)/list.length;return {g,rated,avg};});
-el("groupMeters").innerHTML=values.map(({g,rated,avg})=>`<button class="groupbox" data-filtergroup="${g.id}"><span>${safe(g.emoji+" "+g.name)}</span><b>${rated}/${g.items.length}</b><div class="tinybar"><i style="width:${Math.round(avg*100)}%"></i></div></button>`).join("");
+ const sorted=scores(),group=state.skillFilter||"all",scope=state.skillScope||"top";
+ el("groupSel").innerHTML=`<option value="all">Semua kategori (${skills.length})</option>`+D.groups.map(g=>`<option value="${g.id}">${safe(g.name)} (${g.items.length})</option>`).join("");
+ el("groupSel").value=group;el("skillScope").value=scope;
+ const search=(el("skillSearch").value||"").trim().toLowerCase();
+ let chosen=sorted.filter(s=>(group==="all"||s.group===group)&&(!search||(s.name+" "+s.cluster+" "+groupMap[s.group].name).toLowerCase().includes(search)));
+ if(group==="all"&&!search){
+  if(scope==="top")chosen=chosen.filter(s=>s.tgt>0&&s.gap>0).slice(0,35);
+  else if(scope==="missing")chosen=chosen.filter(s=>s.tgt>0&&s.cur===null).slice(0,50);
+  else if(scope==="deep")chosen=chosen.filter(s=>s.tgt>=3);
+ }
+ el("skillsCounter").textContent=`${chosen.length} ditampilkan dari ${skills.length} subskill • ${assessed()} dinilai`;
+ el("skillRows").innerHTML=chosen.map(s=>{
+ const curOptions=`<option value="" ${s.cur===null?"selected":""}>Belum dinilai</option>`+[0,1,2,3,4].map(d=>`<option value="${d}" ${s.cur===d?"selected":""}>D${d} — ${levelLabel(d).slice(5)}</option>`).join("");
+ const overridden=state.targets?.[s.id];
+ const targetOptions=`<option value="" ${overridden===undefined?"selected":""}>Ikuti jalur (D${s.tgt})</option>`+[0,1,2,3,4].map(d=>`<option value="${d}" ${overridden===d?"selected":""}>Target D${d}${d===0?" · Tunda":""}</option>`).join("");
+ const status=s.tgt===0?"Ditunda":s.cur!==null&&s.cur>=s.tgt?"Maintenance":s.cur===null?"Perlu diagnosis":"Skill gap";
+ return `<div class="skillitem"><div class="skillmeta"><span class="eyebrow">${safe(groupMap[s.group].emoji+" "+groupMap[s.group].name)} / ${safe(s.cluster)}</span><strong>${safe(s.name)}</strong><small>${safe(status)} · ${safe(s.tier)} · skor prioritas ${s.score}/100 ${s.mentions?" · "+s.mentions+" JD":""}</small></div><div class="skillactions"><label class="mini-label">Level sekarang<select aria-label="Level saat ini ${safe(s.name)}" data-level="${safe(s.id)}">${curOptions}</select></label><label class="mini-label">Target kedalaman<select aria-label="Target level ${safe(s.name)}" data-target="${safe(s.id)}">${targetOptions}</select></label></div></div>`;
+ }).join("")||"<p class='muted'>Tidak ada subskill sesuai filter. Coba pilih “Seluruh peta” atau kategori lainnya.</p>";
+ const values=D.groups.map(g=>{const list=skills.filter(s=>s.group===g.id),rated=list.filter(s=>rating(s)!==null).length,target=list.filter(s=>targetLevel(s)>0),achieved=target.filter(s=>rating(s)!==null&&rating(s)>=targetLevel(s)).length;return {g,rated,achieved,target:target.length};});
+ el("groupMeters").innerHTML=values.map(({g,rated,achieved,target})=>`<button class="groupbox" data-filtergroup="${g.id}"><span>${safe(g.emoji+" "+g.name)}</span><b>${rated}/${g.items.length} dinilai · ${achieved}/${target} target tercapai</b><div class="tinybar"><i style="width:${target?Math.round(100*achieved/target):100}%"></i></div></button>`).join("");
 }
 function renderRoadmap(){
 const arr=roleOrder(),selected=Number(state.selectedMonth),indexes=selected<0?arr.map((_,i)=>i):[selected];
@@ -179,6 +188,42 @@ el("jdSignals").innerHTML=top.length?top.map(x=>`<div class="signal"><span>${saf
 function renderSources(){
 el("researchList").innerHTML=D.sources.filter(s=>["Pasar kerja","Indonesia","Contoh lowongan","AI & pekerjaan","AI & kemampuan","AI engineering"].includes(s.type)).map(s=>`<a class="sourceitem" target="_blank" rel="noopener noreferrer" href="${safe(s.url)}"><span class="pill mutedpill">${safe(s.type)}</span><strong>${safe(s.title)}</strong><p>${safe(s.detail)}</p><small>Buka sumber asli ↗</small></a>`).join("");
 el("learningList").innerHTML=D.sources.filter(s=>s.type==="Belajar").map(s=>`<a class="sourceitem" target="_blank" rel="noopener noreferrer" href="${safe(s.url)}"><span class="pill mutedpill">Resource</span><strong>${safe(s.title)}</strong><p>${safe(s.detail)}</p></a>`).join("");
+}
+function renderStrategy(){
+ const years=D.longTerm.slice(0,state.pathYears===5?5:3),ranked=scores().filter(s=>s.tgt>0&&s.gap>0).slice(0,6);
+ const title=D.roleProfiles[state.role].label,domainLabel=D.masterMeta.domains.find(d=>d[0]===(state.domain||"credit"))?.[1]||"Credit risk";
+ const boost={hybrid:"Agent evaluation + data pipelines + statistical reasoning",ai:"Production agent, RAG, tool security, tracing dan evaluasi",ds:"Statistical inference, ML validation, experimentation dan causal inference",de:"SQL, modelling, Airflow/dbt, quality, lineage dan cloud",ml:"ML serving, MLOps, monitoring, software engineering",analytics:"SQL, experimentation, business metrics, semantic layer dan decision memos"}[state.role];
+ const done=Object.values(state.quarterDone||{}).filter(Boolean).length;
+ el("strategySummary").innerHTML=`<div class="card"><span class="eyebrow">Keputusan jalur</span><h3>${safe(title)}</h3><p>${safe(boost)}. Domain jangkar: <b>${safe(domainLabel)}</b>. Domain lain ada dalam backlog dan cukup D0–D1 sampai dibutuhkan.</p></div><div class="card"><span class="eyebrow">Skill gap utama</span><p>${ranked.map(s=>`<span class="tag">${safe(s.name)} · D${s.cur??"?"}→D${s.tgt}</span>`).join(" ")}</p><p>${done}/${years.length*4} checkpoint pada horizon yang ditampilkan selesai.</p></div>`;
+ el("longHorizon").innerHTML=years.map(y=>{
+  const completed=y.quarters.filter((q,i)=>state.quarterDone?.["y"+y.year+"q"+(i+1)]).length;
+  const qhtml=y.quarters.map(([headline,proof],i)=>{
+   const key="y"+y.year+"q"+(i+1);
+   return `<div class="qcard"><div><span class="pill">Q${i+1}</span> <strong>${safe(headline)}</strong></div><p>${safe(proof)}</p><label class="checkline"><input type="checkbox" data-quarter="${key}" ${state.quarterDone?.[key]?"checked":""}> Milestone tervalidasi / ada bukti</label><textarea rows="2" data-quarter-note="${key}" placeholder="Bukti: project, link, impact, kendala...">${safe(state.quarterNotes?.[key]||"")}</textarea></div>`;
+  }).join("");
+  return `<section class="phase card"><div class="phasehead"><span class="pill">Tahun ${y.year} · ${completed}/4 checkpoint</span><h3>${safe(y.theme)}</h3><p>${safe(y.purpose)}</p><div class="tinybar"><i style="width:${completed*25}%"></i></div></div><div class="qgrid">${qhtml}</div></section>`;
+ }).join("");
+}
+function renderSprint(){
+ const arr=roleOrder(),all=[];
+ for(const m of arr)for(let i=0;i<m.weeks.length;i++)all.push({w:m.weeks[i],id:"m"+(m.sourceIndex+1)+"w"+(i+1),phase:m.name});
+ const remaining=all.filter(x=>!state.done?.[x.id]&&!(state.skipMastered&&masteredWeek(x.w)));
+ const n=[8,10,12].includes(Number(state.sprintLen))?Number(state.sprintLen):12;
+ const picked=remaining.slice(0,n),top=scores().filter(x=>x.tgt>0&&x.gap>0).slice(0,8);
+ const impact=picked.reduce((z,x)=>{let sc=top.filter(t=>x.w.tags.includes(t.id)).reduce((a,b)=>a+b.score,0);return z+sc;},0);
+ const days=state.sprintStart||state.start||"2026-11-02";
+ const base=new Date(days+"T00:00:00Z");
+ const sprintDate=i=>{const d=new Date(base);d.setUTCDate(d.getUTCDate()+7*i);return fmtDate(d.toISOString().slice(0,10));};
+ const dateEnd=picked.length?sprintDate(picked.length-1):"—";
+ el("sprintSummary").innerHTML=`<div class="grid2 equal"><div class="card"><span class="eyebrow">Kalibrasi aktif</span><h3>${picked.length} minggu · ${safe(sprintDate(0))}–${safe(dateEnd)}</h3><p>${state.hours} jam/minggu → alokasi total ±${picked.length*state.hours} jam, ditambah English ${state.english} menit/hari.</p><p>Hanya ${picked.length} minggu pertama dari backlog yang belum selesai; sisanya tetap ada di roadmap 12 bulan.</p></div><div class="card"><span class="eyebrow">Adaptive priority overlay</span><p>${top.slice(0,5).map(s=>`<span class="tag">${safe(s.name)} D${s.tgt}</span>`).join(" ")}</p><p>Gap dan lowongan memengaruhi rekomendasi fokus; urutan mingguan tetap mempertahankan prasyarat. Indeks kecocokan sprint: ${Math.round(impact)} poin heuristik.</p></div></div>`;
+ el("sprintWeeks").innerHTML=picked.length?picked.map(({w,id,phase},i)=>{
+  const done=!!state.done?.[id],mastered=masteredWeek(w);
+  const match=top.filter(s=>w.tags.includes(s.id)).slice(0,3).map(s=>`<span class="tag">${safe(s.name)}</span>`).join("");
+  return `<details class="week ${done?"weekdone":""}"><summary><div class="weeknum">S${String(i+1).padStart(2,"0")}</div><div class="weektitle"><strong>${safe(w.t)}</strong><small>${sprintDate(i)} · ${safe(phase)}</small></div><span class="weekstatus">${mastered?"Sudah dikuasai":"Rencana"}</span><span class="chev">⌄</span></summary><div class="weekbody"><div class="columns"><div><label>PELAJARI</label><p>${safe(w.l)}</p></div><div><label>PRAKTIK</label><p>${safe(w.p)}</p></div><div><label>BUKTI SELESAI</label><p>${safe(w.e)}</p></div><div><label>JIKA MASIH ADA WAKTU</label><p>${safe(w.x)}</p></div></div><div class="tags">${match||w.tags.map(t=>`<span class="tag">${safe(skillMap[t]?.name||t)}</span>`).join("")}</div><label class="checkline" style="margin-top:13px"><input type="checkbox" data-week="${id}" ${done?"checked":""}> Mark selesai & terbukti</label><textarea rows="2" data-note="${id}" placeholder="Bukti output atau catatan singkat...">${safe(state.notes?.[id]||"")}</textarea></div></details>`;
+ }).join(""):`<div class="empty">Semua minggu yang relevan sudah selesai atau fast-track. Coba ubah target kedalaman atau evaluasi ulang skill.</div>`;
+ const fields=[["wins","Apa yang selesai dan bisa dibuktikan?"],["blockers","Hambatan utama dan sebabnya?"],["impact","Apa nilai/hasilnya (metric, keputusan, portofolio)?"],["next","Apa yang akan diprioritaskan/ditunda di sprint berikutnya?"]];
+ el("reviewInputs").innerHTML=fields.map(([id,label])=>`<label class="fieldlabel" style="display:block;margin:11px 0 4px">${safe(label)}</label><textarea rows="2" data-review="${id}" placeholder="Tuliskan singkat dan terukur...">${safe(state.review?.[id]||"")}</textarea>`).join("");
+ el("replanHistory").innerHTML=(state.replans||[]).slice().reverse().slice(0,8).map(x=>`<div class="jdcard"><strong>${safe(x.date)} · ${safe(x.role)}</strong><p>${safe(x.description)}</p><small>W${x.completed}/52 selesai · ${x.remaining} backlog</small></div>`).join("")||`<p class="muted">Belum ada riwayat rekalibrasi. Klik Rekalibrasi sprint setelah mengisi skill atau saat review 8–12 minggu.</p>`;
 }
 function renderAll(){header();renderOverview();renderSkills();renderRoadmap();renderJobs();renderSources();renderStrategy();renderSprint();}
 function updateField(id,value){state[id]=value;save();renderAll();}
@@ -242,5 +287,13 @@ el("exportBtn").addEventListener("click",exportJSON);
 el("importBtn").addEventListener("click",()=>el("fileImport").click());
 el("resetBtn").addEventListener("click",()=>{if(confirm("Hapus seluruh progres, assessment dan JD dari browser ini? Pastikan sudah export backup.")){state={...DEFAULT};save();renderAll();}});
 el("resetMonthBtn").addEventListener("click",()=>{state.selectedMonth=-1;save();renderRoadmap();});
+el("replanBtn").addEventListener("click",()=>{
+ const now=new Date(),local=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"}).format(now);
+ const current=scores().filter(s=>s.tgt>0&&s.gap>0).slice(0,5);
+ const pending=roleOrder().reduce((n,m)=>n+m.weeks.filter((w,i)=>!state.done?.["m"+(m.sourceIndex+1)+"w"+(i+1)]&&!(state.skipMastered&&masteredWeek(w))).length,0);
+ state.sprintStart=local;state.replans=state.replans||[];
+ state.replans.push({date:local,role:D.roleProfiles[state.role].label,description:"Prioritas: "+current.map(s=>s.name).join(", "),completed:progress(),remaining:pending});
+ state.replans=state.replans.slice(-20);save();renderSprint();
+});
 renderAll();activate("overview");el("saveStatus").textContent="Disimpan lokal • tidak tersinkron ke GitHub";
 })(ROADMAP_DATA);</script></body></html>
