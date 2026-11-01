@@ -1,57 +1,63 @@
-# Career Decision Lab — Data & AI Roadmap
+# Career Decision Lab — Master Skill Map & Global Data/AI Roadmap
 
-A self-contained, offline-capable, interactive GitHub Pages app for planning a one-year career transition across Data Science, Data Engineering, ML Engineering, Analytics, and AI/Agent Engineering.
+**Last research baseline:** 2026-11-01 (v3). **Website:** https://oscar-sinaga.github.io/website/career-roadmap/
 
-## Website
-- Pages path: `/website/career-roadmap/`
-- Source: `career-roadmap/index.html`
-- Project listing: root `website/index.html`
-- Research snapshot: **2026-11-01**. This is NOT a live job board.
+A static interactive roadmap that bridges long-term career decisions and actual weekly execution. Built for someone targeting Data Scientist, Data Engineer, Data Analyst/Analytics Engineer, ML Engineer and AI/Agent Engineer jobs, with an option to focus on business domains such as credit risk.
 
-## Features
+## Application layers
 
-- Six role profiles: Hybrid Data + Agentic AI, AI / Agent Engineer, Applied / Decision Data Scientist, Data / Analytics Engineer, ML / MLOps Engineer, Product Data Analyst.
-- Target-country preference: Singapore, Australia, Germany, Netherlands, United States, Canada, Indonesia.
-- 55 specific subskills across 11 categories, each self-assessed D0–D4.
-- Recommended priority score (editorial heuristic) factoring role-target depth, self-assessed gap, public 2026 market evidence, durability, transferability, and keywords in **user-curated** JDs.
-- 12 learning phases / 52 weekly modules; specific weekly study, exercise, deliverable, stretch objective, and reference.
-- Role-dependent phase ordering, mastery-based fast-track that compresses the timeline, week checklists, notes, and progress.
-- Weekly time and English practice settings.
-- Local job-description analyzer, including link to original job posts and skill-keyword mentions.
-- Progress backup through JSON export/import; all data stored in `localStorage`.
+1. **Master Skill Map** — 260 granular subskills across 16 knowledge groups (group → competency cluster → skill), current level D0–D4, per-skill target override, track/domain dependent depth, priority scoring, top-gap and full-map filters.
+2. **3–5 year career strategy** — 5 strategic years and 20 quarterly milestones, selective optional years 4–5, track-specific emphasis, evidence checkboxes and private impact notes.
+3. **12-month operational roadmap** — 12 ordered phases/52 weekly modules with explicit learning objectives, practice, deliverables, stretch topics and source links. Changing the primary career cluster changes the sequence.
+4. **8–12 week rolling sprint** — 8, 10 or 12 weeks from incomplete modules with focus gap suggestions, checkpoints and recalibration history.
+5. **Job-market intelligence** — links to LinkedIn, Jobstreet and SEEK, user-curated JD parser (local browser only), curated research sources and optional dated Market Pulse data feed.
 
-## Privacy and safety
+## Priority model limitations
 
-**GitHub repository and Pages content are public.** The repository contains templates, research references, and learning material only. Individual skill ratings, job descriptions, and progress remain in the visitor's browser. They are **not** synced to GitHub, a database, or a server. Users should export backups. Do not paste internal company secrets or personal customer data.
+Scores are **heuristic editorial ordering**, not measured probabilities of employment, salary, sponsorship or protection from automation. They combine target depth, self-assessed gaps, broad 2026 job-demand evidence, conceptual longevity, cross-industry transferability and optional keyword mentions in hand-curated job descriptions. Text mentions in JD do not equal a representative market census, and job posts may be stale, ambiguous or private.
 
-The app is intentionally static HTML/CSS/JavaScript without CDN or API-key dependencies. AI-job market scores are *not* forecasts of salary, unemployment, visa eligibility, or protection against AI automation.
+Target depth defaults to the selected career cluster, then is adjusted for whether a skill is marked core/adjacent/optional; non-selected business domains default to D0. Users can override any skill's target D0–D4. No one is expected to master all 260 skills. Keep breadth as awareness and train depth only where valuable.
 
-## Methodology
+## State and privacy
 
-The initial research baseline uses:
-- LinkedIn Labor Market Report 2026 and AI jobs announcement (Oct 27, 2026).
-- World Economic Forum Future of Jobs Report 2025.
-- Indonesian Komdigi skill/vacancy review (published 2026; vacancy sample Mar–Jul 2025).
-- Public illustrative role descriptions: Shopee Singapore agent evaluation, Tech Aalto Sydney data engineering, Jobstreet Indonesia AI Agent Developer, BLEN AI Engineer.
-- Anthropic Economic Index and Labor Market Impacts research; METR Frontier Risk Report.
-- Technical education sources linked within the app: ISLP, Causal Inference Mixtape, OpenAI Agents SDK, pytest, PostgreSQL, dbt, Airflow, OpenLineage, Google MLOps and AWS.
+- The app uses the existing `data-ai-career-lab-2026-v2` localStorage key to preserve historical progress, notes, ratings and curated JDs.
+- New states include per-skill target overrides, chosen domain track, strategy horizon (3 or 5 years), quarterly milestone status, sprint duration, reviews and recalibration decisions.
+- Progress lives **only in the browser**, not GitHub. Export JSON regularly. JSON import validates key fields and loads old v2 backups.
+- Never paste customer data, secret company data, passwords, keys or proprietary documents into the public repository or browser app.
+- `market-updates.json` contains only public sources and editorial changes. The app attempts to load it on GitHub Pages with a bundled offline fallback.
 
-**Limitations:** Search rankings, advertised counts, and the public sample of role descriptions are not a representative census. Ads may close. Region/country choices order search links but do not apply unsourced country-specific demand multipliers. Text-mention counts in user-added JD are not labour-market frequencies and do not distinguish required from preferred skills.
+## Weekly conditional GitHub update process
 
-## Updating market evidence
+A ChatGPT scheduled radar, **Radar Karier & GitHub**, checks credible sources each Monday morning (Asia/Jakarta): public roles in Singapore, Australia, Germany, Netherlands, Canada, USA and Indonesia, and AI capability/labour-market research.
 
-The user's weekly ChatGPT automation checks relevant markets and AI developments. It sends a periodic research summary; it does **not automatically overwrite this website**. If priorities change materially, update the cited sources, skill weights, phase content, and `asof` date through a reviewed GitHub commit. Public sites often limit automated scraping, so use official public sources, approved APIs, and original job postings where possible.
+Updates are **conditional**, not an automatic blind reweighting or guaranteed weekly commit:
 
-## Verification checklist
+1. Read original sources and compare with current baseline and sample of relevant roles. Verify dates, seniority and sponsorship, and do not infer population-wide counts from search result numbers.
+2. If nothing materially changes priority, do **not** commit. Report unchanged status.
+3. If facts or role requirements meaningfully shift, update `market-updates.json` and `CHANGELOG.md` with sources, dates and implications. Only adjust main skill weights or content if evidence strongly supports a revision.
+4. Fetch latest SHA and preserve all features, stable IDs, existing progress schema and current files. Validate JSON, JS syntax, skill uniqueness, 52 weekly IDs, and key flows. Read back committed changes.
+5. For substantial or risky logic/UI changes, use a branch and PR for user approval; do not overwrite main blindly.
+6. If GitHub is inaccessible or actions fail, report the limitation instead of claiming success.
 
-1. Open the site, switch role profiles; confirm learning phase order changes.
-2. Assess specific subskills and check that ranking changes.
-3. Enable fast-track after marking all tagged subskills as mastered; confirm eligible modules disappear and dates compress.
-4. Add a public job description; confirm keyword signals and priority update.
-5. Mark a weekly deliverable, add a note, reload; confirm browser persistence.
-6. Export JSON; reset app; import JSON; confirm progress recovery.
-7. Test mobile viewport and keyboard navigation.
+## QA checklist
 
-## Maintenance
+- 16 skill categories and 260 stable skill IDs; categories/cluster/search and custom targets working.
+- Original 52 lesson IDs and legacy `levels/done/notes/jds` restored after reload or v2 JSON import.
+- Career cluster changes order; selected business domain changes track target skills.
+- Switching strategy horizon displays 3 years/12 checkpoints or 5 years/20 checkpoints.
+- Rolling sprint selection displays exactly 8/10/12 pending weeks where available; finishing a week advances backlog.
+- Market Pulse shows dated, linked findings when JSON loads; remains usable offline if unavailable.
+- User-added JD keyword signals never claimed as complete market statistics.
+- Mobile viewport and keyboard focus should remain usable after every major update.
 
-Version: `2026.11.01-v2`. Document any job-market research update with date, source URL, region, role and a note on evidence type. Preserve user-facing caveats about sampling and uncertainty.
+## Public sources
+
+LinkedIn (Oct 27 2026): https://news.linkedin.com/2026/linkedin-data-shows-where-opportunity-is-emerging-as-work-changes
+
+Anthropic labour market research (Mar 2026): https://www.anthropic.com/research/labor-market-impacts
+
+Anthropic AI agent evals (Jan 2026): https://www.anthropic.com/research/demystifying-evals-for-ai-agents
+
+Komdigi public report: https://bpsdm.komdigi.go.id/publikasi_2355_3_358
+
+All other learning sources are linked within the app; see `CHANGELOG.md` for changes.
