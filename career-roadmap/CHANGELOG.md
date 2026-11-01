@@ -1,5 +1,14 @@
 # Career Decision Lab — Change Log
 
+## 2026-11-01 — User Guide & Onboarding v3.1
+
+- Added detailed Indonesian user manual: `PANDUAN.md`.
+- Published `panduan.html` with first-use 8-step checklist, example learning focus selector, glossary, tables, role-specific walkthroughs, FAQ, and privacy explanation.
+- Linked help from the main app sidebar, homepage overview and contextual help links for strategy, skill map, roadmap, sprint, job analysis, sources and settings.
+- Clarified known limitations: country currently reorders job-search links; hours do not automatically shorten the 52-week syllabus; priority scores are not employment probabilities; the JD parser uses partial keyword matching; sprint uses first incomplete modules.
+- Preserved app IDs, main `localStorage` key, source data, 52-week lessons and user progress schema. Guide checklist is separate from the primary app state.
+- All guidance uses public/generic examples, not personal assessment data.
+
 ## 2026-11-01 — Master Skill Map & Strategic Roadmap v3
 
 - Expanded the competency map from 55 to **260 specific subskills** in 16 knowledge domains (category → cluster → skill).
