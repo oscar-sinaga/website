@@ -4,6 +4,13 @@
 
 A static interactive roadmap that bridges long-term career decisions and actual weekly execution. Built for someone targeting Data Scientist, Data Engineer, Data Analyst/Analytics Engineer, ML Engineer and AI/Agent Engineer jobs, with an option to focus on business domains such as credit risk.
 
+## Documentation & getting started
+
+- [Panduan penggunaan lengkap (interaktif)](./panduan.html) — onboarding checklist, simulations, explanations of D0–D4, glossary, limits and troubleshooting.
+- [Panduan lengkap (Markdown)](./PANDUAN.md) — comprehensive Indonesian documentation, printable and version-controlled.
+- For a first session, choose one target career and one domain; diagnose only 10–20 relevant skills; start with 8-week sprint; export JSON backup.
+- Contextual help links in the app navigate directly to relevant guide sections. Guide checkboxes use a **separate localStorage key** and do not mark roadmap lessons done.
+
 ## Application layers
 
 1. **Master Skill Map** — 260 granular subskills across 16 knowledge groups (group → competency cluster → skill), current level D0–D4, per-skill target override, track/domain dependent depth, priority scoring, top-gap and full-map filters.
@@ -40,6 +47,11 @@ Updates are **conditional**, not an automatic blind reweighting or guaranteed we
 6. If GitHub is inaccessible or actions fail, report the limitation instead of claiming success.
 
 ## QA checklist
+
+- Help navigation goes to the guide without changing the selected role or erasing progress.
+- Guide links from skills/strategy/sprint/jobs/settings resolve to matching anchors.
+- Guide checklist state does not affect 260-skill assessments or weekly progress.
+- Guide remains usable offline as a static HTML page; it does not expose personal data.
 
 - 16 skill categories and 260 stable skill IDs; categories/cluster/search and custom targets working.
 - Original 52 lesson IDs and legacy `levels/done/notes/jds` restored after reload or v2 JSON import.
