@@ -350,7 +350,7 @@ function homeHTML(){
     return `<div class="ex">
       <div class="num"><small>Mock exam</small>${pad2(ex.id)}</div>
       <div class="comp" title="Komposisi domain">${bar}</div>
-      <div class="best">${tries.length?`Terbaik <b>${best}</b> · ${tries.length}× dicoba`:`${ex.qs.length} soal · ${EXAM_MIN} menit`}<br>${status}</div>
+      <div class="best">${ex.qs.length} soal · ${EXAM_MIN} menit${tries.length?`<br>Terbaik <b>${best}</b> · ${tries.length}× dicoba`:""}<br>${status}</div>
       <button class="btn ${tries.length?"":"primary"} sm" data-act="exam" data-id="${ex.id}">${tries.length?"Ulangi":"Mulai"}</button>
     </div>`;
   }).join("");
@@ -388,6 +388,7 @@ function homeHTML(){
       <div class="eyebrow">AWS Certified Cloud Practitioner · latihan</div>
       <h1 style="margin-top:8px">10 mock exam CLF-C02</h1>
       <p class="lead">Sepuluh paket ujian dengan soal yang berbeda, masing-masing 65 soal dan 90 menit dengan bobot domain resmi. Setiap soal punya pembahasan untuk semua opsi: kenapa jawaban benar itu benar, dan apa fungsi sebenarnya dari setiap pengecoh.</p>
+<p class="lead" style="font-size:.92rem"><strong>Mock exam penuh: 65 soal.</strong> Pada ujian resmi AWS, 50 soal dinilai dan 15 tidak dinilai; simulasi ini menghitung seluruh 65 soal untuk nilai latihan. Untuk sesi singkat, pilih mode latihan 10, 20, 40, atau semua soal.</p>
     </div>
     <div class="facts">
       <div class="fact"><b>${EXAMS.length}</b><span>paket ujian</span></div>
@@ -407,7 +408,7 @@ function homeHTML(){
       <div class="eyebrow">Latihan bebas</div>
       <h3>Latihan per domain</h3>
       <div class="field"><label>Domain</label><div class="chips">${chips}</div></div>
-      <div class="field"><label>Jumlah soal</label><div class="chips">${nchips}</div></div>
+      <div class="field"><label>Jumlah soal latihan (bukan mock exam)</label><div class="chips">${nchips}</div></div>
       <button class="btn primary" data-act="practice" ${S.prefs.domains.length?"":"disabled"}>Mulai latihan</button>
       <div style="border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px">
         <p>Soal yang pernah salah: <b class="mono" style="color:var(--ink)">${wrongN}</b>. Soal keluar dari daftar ini begitu dijawab benar.</p>
