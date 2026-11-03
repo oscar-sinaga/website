@@ -211,6 +211,11 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:
   .hide-sm{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.ex .exam-start{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.ex .exam-start .btn{flex:1;min-width:70px;margin-top:0;white-space:nowrap;padding:9px 7px}
+.cell.extra{border-style:dashed}
+
 </style>
 
 <header class="top">
@@ -242,6 +247,33 @@ const DOMAINS = {
 const EXAM_MIN = 90, PASS = 700, L = "ABCDEFGH";
 const PASS_PCT = (PASS-100)/900;
 
+/* AWS-inspired training split: deterministic and balanced by domain.
+   Actual AWS unscored items cannot be identified. */
+const CORE_COUNT=50, FULL_COUNT=65, examSplitCache=new Map();
+function examHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function examSplit(ex){
+  if(examSplitCache.has(ex.id))return examSplitCache.get(ex.id);
+  const domains=Object.keys(DOMAINS).map(Number);
+  const available=Object.fromEntries(domains.map(d=>[d,ex.qs.filter(q=>q.d===d).length]));
+  const quota=Object.fromEntries(domains.map(d=>[d,Math.min(available[d],Math.floor(CORE_COUNT*DOMAINS[d].w/100))]));
+  let chosen=domains.reduce((sum,d)=>sum+quota[d],0);
+  while(chosen<CORE_COUNT){
+    const candidates=domains.filter(d=>quota[d]<available[d]);
+    if(!candidates.length)throw Error("Bank soal tidak cukup");
+    candidates.sort((a,b)=>(CORE_COUNT*DOMAINS[b].w/100-quota[b])-(CORE_COUNT*DOMAINS[a].w/100-quota[a])||a-b);
+    quota[candidates[0]]++;chosen++;
+  }
+  const coreIds=new Set();
+  domains.forEach(d=>ex.qs.filter(q=>q.d===d).slice().sort((a,b)=>examHash(ex.id+"|"+a.id)-examHash(ex.id+"|"+b.id)||String(a.id).localeCompare(String(b.id))).slice(0,quota[d]).forEach(q=>coreIds.add(q.id)));
+  const core=ex.qs.filter(q=>coreIds.has(q.id)).map(q=>({...q,part:"core"}));
+  const extra=ex.qs.filter(q=>!coreIds.has(q.id)).map(q=>({...q,part:"extra"}));
+  if(core.length!==CORE_COUNT || extra.length!==FULL_COUNT-CORE_COUNT)throw Error("Komposisi soal tidak valid");
+  const parts={core,extra};examSplitCache.set(ex.id,parts);return parts;
+}
+function modernExam(){return S.mode==="exam"&&(S.scope==="core"||S.scope==="full");}
+function answeredAt(i){return Array.isArray(S.ans[i])&&S.ans[i].length>0;}
+function missingCore(){return modernExam()?S.qs.slice(0,CORE_COUNT).filter((_,i)=>!answeredAt(i)).length:0;}
+
 /* ---------------- helpers ---------------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -262,12 +294,17 @@ function prep(src){
 let S = { screen:"home", prefs:{domains:[1,2,3,4], n:20}, warm:null };
 let tick = null;
 
-function begin(mode, qs, examId){
-  S = { ...S, screen:"run", mode, examId:examId||null, qs, ans:{}, flags:[], cur:0, revealed:{}, startAt:Date.now(),
-        endAt: mode==="exam" ? Date.now()+EXAM_MIN*60000 : null, confirm:false };
-  render(); startTick(); window.scrollTo(0,0);
+function begin(mode,qs,examId,scope=null){
+  const now=Date.now();
+  S={...S,screen:"run",mode,examId:examId||null,scope,qs,ans:{},flags:[],cur:0,revealed:{},startAt:now,endAt:mode==="exam"?now+EXAM_MIN*60000:null,confirm:false};
+  render();startTick();window.scrollTo(0,0);
 }
-function startExam(id){ const ex = EXAMS.find(e=>e.id===id); if (ex) begin("exam", ex.qs.map(prep), id); }
+function startExam(id,scope="core"){
+  const ex=EXAMS.find(e=>e.id===id);if(!ex)return;
+  const {core,extra}=examSplit(ex);
+  begin("exam",(scope==="full"?core.concat(extra):core).map(prep),id,scope==="full"?"full":"core");
+}
+
 function startPractice(){
   const pool = POOL.filter(q=>S.prefs.domains.includes(q.d));
   const n = S.prefs.n==="all" ? pool.length : Math.min(S.prefs.n, pool.length);
@@ -279,29 +316,40 @@ function startWrongOnly(){
   if (qs.length) begin("practice", shuffle(qs).map(prep));
 }
 function startTick(){ clearInterval(tick); tick = setInterval(()=>{ if(S.screen!=="run") return clearInterval(tick); paintTimer(); if(S.endAt && Date.now()>=S.endAt) finish(true); }, 1000); }
-function saveRun(){ if (S.screen==="run") store("clf_run", { mode:S.mode, examId:S.examId, qs:S.qs, ans:S.ans, flags:S.flags, cur:S.cur, revealed:S.revealed, startAt:S.startAt, endAt:S.endAt }); }
+function saveRun(){if(S.screen==="run")store("clf_run",{mode:S.mode,examId:S.examId,scope:S.scope,qs:S.qs,ans:S.ans,flags:S.flags,cur:S.cur,revealed:S.revealed,startAt:S.startAt,endAt:S.endAt});}
 
 function finish(timeUp){
+  if(S.screen!=="run")return;
+  if(!timeUp&&missingCore()>0){S.confirm=true;render();return;}
   clearInterval(tick);
-  const res = {1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0}};
-  let correct = 0; const missedTopics = {};
-  const wrong = new Set(store("clf_wrong") || []);
+  const modern=modernExam(),total=modern?CORE_COUNT:S.qs.length;
+  const res=Object.fromEntries(Object.keys(DOMAINS).map(d=>[d,{c:0,t:0}]));
+  let correct=0,coreAnswered=0,extraAnswered=0,extraCorrect=0;
+  const missedTopics={},wrong=new Set(store("clf_wrong")||[]);
   S.qs.forEach((q,i)=>{
-    const ok = sameSet(S.ans[i]||[], q.a); res[q.d].t++;
-    if (ok){ res[q.d].c++; correct++; wrong.delete(q.id); }
-    else { wrong.add(q.id); missedTopics[q.t] = (missedTopics[q.t]||0)+1; }
+    const answered=answeredAt(i),optional=modern&&i>=CORE_COUNT;
+    if(optional&&!answered)return;
+    const ok=answered&&sameSet(S.ans[i]||[],q.a);
+    if(optional){extraAnswered++;if(ok)extraCorrect++;}
+    else{if(answered)coreAnswered++;res[q.d].t++;if(ok){res[q.d].c++;correct++;}}
+    if(ok)wrong.delete(q.id);else{wrong.add(q.id);missedTopics[q.t]=(missedTopics[q.t]||0)+1;}
   });
-  store("clf_wrong", Array.from(wrong));
-  const pct = correct/S.qs.length;
-  S.result = { correct, total:S.qs.length, pct, score:scaled(pct), dom:res, used:Math.round((Date.now()-S.startAt)/1000), timeUp:!!timeUp,
-               topics:Object.entries(missedTopics).sort((a,b)=>b[1]-a[1]).slice(0,10) };
-  S.screen = "result"; S.filter = "wrong";
-  const hist = store("clf_hist") || [];
-  hist.unshift({ t:Date.now(), mode:S.mode, ex:S.examId, score:S.result.score, correct, total:S.qs.length, used:S.result.used,
-                 dom:Object.fromEntries(Object.entries(res).map(([d,x])=>[d,[x.c,x.t]])) });
-  store("clf_hist", hist.slice(0,60));
-  store("clf_run", null);
-  render(); window.scrollTo(0,0);
+  store("clf_wrong",Array.from(wrong));
+  const score=scaled(correct/total),complete=coreAnswered===total;
+  const extraTotal=modern&&S.scope==="full"?FULL_COUNT-CORE_COUNT:0;
+  const fullReady=extraTotal>0&&complete&&extraAnswered===extraTotal;
+  const fullCorrect=fullReady?correct+extraCorrect:null,fullScore=fullReady?scaled(fullCorrect/FULL_COUNT):null;
+  const used=Math.round((Date.now()-S.startAt)/1000);
+  S.result={correct,total,pct:correct/total,score,dom:res,used,timeUp:!!timeUp,scope:S.scope||"legacy",complete,coreAnswered,extraAnswered,extraCorrect,extraTotal,fullCorrect,fullScore,
+    topics:Object.entries(missedTopics).sort((a,b)=>b[1]-a[1]).slice(0,10)};
+  S.screen="result";S.filter="wrong";
+  const hist=store("clf_hist")||[];
+  hist.unshift({t:Date.now(),mode:S.mode,ex:S.examId,score,correct,total,used,scope:S.scope||"legacy",
+    coreScore:modern?score:null,coreCorrect:modern?correct:null,coreTotal:modern?CORE_COUNT:null,coreAnswered:modern?coreAnswered:null,
+    extraAnswered:modern?extraAnswered:null,extraCorrect:modern?extraCorrect:null,extraTotal:modern?extraTotal:null,
+    fullScore,fullCorrect,complete,dom:Object.fromEntries(Object.entries(res).map(([d,x])=>[d,[x.c,x.t]]))});
+  store("clf_hist",hist.slice(0,60));store("clf_run",null);
+  render();window.scrollTo(0,0);
 }
 
 /* ---------------- rendering ---------------- */
@@ -327,7 +375,7 @@ function renderTop(){
   }
   $("#topbar").innerHTML = `<button class="brand" data-act="home" aria-label="Kembali ke beranda">Cloud Practitioner Mock <span class="code">CLF-C02</span></button><span class="spacer"></span>${right}<a class="btn ghost sm" href="../" title="Pilih sertifikasi AWS lain" style="white-space:nowrap">← AWS Exams</a>`;
   $("#progwrap").hidden = !run;
-  if (run){ const done = S.qs.filter((_,k)=>(S.ans[k]||[]).length).length; $("#progbar").style.width = (done/S.qs.length*100)+"%"; }
+  if(run){const count=modernExam()?CORE_COUNT:S.qs.length;const done=S.qs.slice(0,count).filter((_,i)=>answeredAt(i)).length;$("#progbar").style.width=(done/count*100)+"%";}
 }
 function paintTimer(){
   const el = $("#timer"); if(!el) return;
@@ -341,17 +389,24 @@ function homeHTML(){
   const wrongN = (store("clf_wrong") || []).length;
   const counts = {1:0,2:0,3:0,4:0}; POOL.forEach(q=>counts[q.d]++);
 
-  const cards = EXAMS.map(ex=>{
-    const tries = hist.filter(h=>h.mode==="exam" && h.ex===ex.id);
-    const best = tries.reduce((m,h)=>Math.max(m,h.score),0);
-    const comp = {1:0,2:0,3:0,4:0}; ex.qs.forEach(q=>comp[q.d]++);
-    const bar = [1,2,3,4].map(d=>`<i style="width:${comp[d]/ex.qs.length*100}%;background:${DOMAINS[d].c}"></i>`).join("");
-    const status = !tries.length ? `<span class="pill new">Belum dicoba</span>` : `<span class="pill ${best>=PASS?"pass":"fail"}">${best>=PASS?"Lulus":"Belum lulus"}</span>`;
+const cards=EXAMS.map(ex=>{
+    const tries=hist.filter(h=>h.mode==="exam"&&h.ex===ex.id&&Number.isFinite(h.coreScore));
+    const old=hist.some(h=>h.mode==="exam"&&h.ex===ex.id&&!Number.isFinite(h.coreScore));
+    const best=tries.reduce((max,h)=>Math.max(max,h.coreScore),0);
+    const comp=Object.fromEntries(Object.keys(DOMAINS).map(d=>[d,0]));
+    examSplit(ex).core.forEach(q=>comp[q.d]++);
+    const bar=Object.keys(DOMAINS).map(d=>`<i style="width:${comp[d]/CORE_COUNT*100}%;background:${DOMAINS[d].c}"></i>`).join("");
+    const status=!tries.length?`<span class="pill new">${old?"Riwayat format lama":"Belum dicoba"}</span>`:
+      `<span class="pill ${best>=PASS?"pass":"fail"}">${best>=PASS?"Lulus":"Belum lulus"}</span>`;
     return `<div class="ex">
       <div class="num"><small>Mock exam</small>${pad2(ex.id)}</div>
-      <div class="comp" title="Komposisi domain">${bar}</div>
-      <div class="best">${ex.qs.length} soal · ${EXAM_MIN} menit${tries.length?`<br>Terbaik <b>${best}</b> · ${tries.length}× dicoba`:""}<br>${status}</div>
-      <button class="btn ${tries.length?"":"primary"} sm" data-act="exam" data-id="${ex.id}">${tries.length?"Ulangi":"Mulai"}</button>
+      <div class="comp" title="Distribusi domain 50 soal wajib">${bar}</div>
+      <div class="best">50 wajib + 15 opsional · ${EXAM_MIN} menit
+       ${tries.length?`<br>Terbaik <b>${best}</b> · ${tries.length}×`:""}<br>${status}</div>
+      <div class="exam-start">
+        <button class="btn primary sm" data-act="exam" data-id="${ex.id}" data-scope="core">Mulai 50</button>
+        <button class="btn sm" data-act="exam" data-id="${ex.id}" data-scope="full">Mulai 65</button>
+      </div>
     </div>`;
   }).join("");
 
@@ -363,22 +418,29 @@ function homeHTML(){
 
   // Domain accuracy across all attempts, to point at the weakest area.
   const agg = {1:[0,0],2:[0,0],3:[0,0],4:[0,0]};
-  hist.forEach(h=>{ if(h.dom) for (const d in h.dom){ agg[d][0]+=h.dom[d][0]; agg[d][1]+=h.dom[d][1]; } });
+  hist.filter(h=>h.mode==="exam"&&Number.isFinite(h.coreScore)).forEach(h=>{if(h.dom)for(const d in h.dom){agg[d][0]+=h.dom[d][0];agg[d][1]+=h.dom[d][1];}});
   const anyAgg = Object.values(agg).some(x=>x[1]);
   const weak = anyAgg ? [1,2,3,4].map(d=>`<div class="row"><span>D${d} ${DOMAINS[d].name}</span><b style="color:${agg[d][1]&&agg[d][0]/agg[d][1]<PASS_PCT?"var(--bad)":"var(--good)"}">${agg[d][1]?Math.round(agg[d][0]/agg[d][1]*100)+"%":"–"}</b></div>`).join("") : "";
 
-  const histHTML = hist.length ? `
+const histHTML=hist.length?`
     <div class="sec-h"><h2>Riwayat percobaan</h2></div>
     <div class="tbl-wrap"><table class="hist-table">
-      <thead><tr><th>Tanggal</th><th>Sesi</th><th>Benar</th><th>Skor</th><th>Waktu</th><th>Status</th></tr></thead>
-      <tbody>${hist.slice(0,15).map(h=>`<tr>
-        <td>${new Date(h.t).toLocaleString("id-ID",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td>
-        <td>${h.mode==="exam"?`Mock Exam ${pad2(h.ex)}`:"Latihan"}</td>
-        <td class="mono">${h.correct}/${h.total}</td>
-        <td class="mono"><b>${h.score}</b></td>
-        <td class="mono">${fmtTime(h.used)}</td>
-        <td><span class="pill ${h.score>=PASS?"pass":"fail"}">${h.score>=PASS?"Lulus":"Belum"}</span></td></tr>`).join("")}</tbody>
-    </table></div>` : "";
+      <thead><tr><th>Tanggal</th><th>Sesi</th><th>Benar</th><th>Skor 50</th><th>Skor 65</th><th>Waktu</th><th>Status</th></tr></thead>
+      <tbody>${hist.slice(0,15).map(h=>{
+        const current=h.mode==="exam"&&Number.isFinite(h.coreScore),old=h.mode==="exam"&&!current;
+        const detail=current?`${h.coreCorrect}/50${h.extraTotal?` + ${h.extraAnswered}/15 tambahan`:""}`:`${h.correct}/${h.total}`;
+        const status=current?(h.coreAnswered<CORE_COUNT?"Tidak lengkap":h.coreScore>=PASS?"Lulus":"Belum"):old?"Format lama":"Latihan";
+        const pill=old||!current||h.coreAnswered<CORE_COUNT?"new":h.coreScore>=PASS?"pass":"fail";
+        return `<tr>
+          <td>${new Date(h.t).toLocaleString("id-ID",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</td>
+          <td>${old?`Mock Exam ${pad2(h.ex)} (lama)`:current?`Mock Exam ${pad2(h.ex)} · ${h.scope==="full"?"65":"50"}`:"Latihan"}</td>
+          <td class="mono">${detail}</td>
+          <td class="mono"><b>${current?h.coreScore:h.mode==="practice"?h.score:"—"}</b></td>
+          <td class="mono">${current?(h.fullScore==null?"—":h.fullScore):old?`${h.score} (lama)`:"—"}</td>
+          <td class="mono">${fmtTime(h.used)}</td>
+          <td><span class="pill ${pill}">${status}</span></td></tr>`;
+      }).join("")}</tbody></table></div>
+    <p class="note">Nilai 65 dari riwayat lama tetap tersimpan sebagai arsip dan tidak dibandingkan dengan skor baru 50 soal.</p>`:"";
 
   if (!S.warm) S.warm = { q: prep(POOL[Math.floor(Math.random()*POOL.length)]), sel:[], shown:false };
 
@@ -388,7 +450,7 @@ function homeHTML(){
       <div class="eyebrow">AWS Certified Cloud Practitioner · latihan</div>
       <h1 style="margin-top:8px">10 mock exam CLF-C02</h1>
       <p class="lead">Sepuluh paket ujian dengan soal yang berbeda, masing-masing 65 soal dan 90 menit dengan bobot domain resmi. Setiap soal punya pembahasan untuk semua opsi: kenapa jawaban benar itu benar, dan apa fungsi sebenarnya dari setiap pengecoh.</p>
-<p class="lead" style="font-size:.92rem"><strong>Mock exam penuh: 65 soal.</strong> Pada ujian resmi AWS, 50 soal dinilai dan 15 tidak dinilai; simulasi ini menghitung seluruh 65 soal untuk nilai latihan. Untuk sesi singkat, pilih mode latihan 10, 20, 40, atau semua soal.</p>
+<p class="lead" style="font-size:.92rem"><strong>Pilih simulasi 50 wajib atau 65 soal.</strong> Mode 65 terdiri dari 50 soal wajib untuk nilai utama dan 15 soal opsional. Nilai 50 dan nilai 65 tampil terpisah jika semua 65 soal dijawab. Mode latihan bebas 10/20/40/semua tetap tersedia.</p>
     </div>
     <div class="facts">
       <div class="fact"><b>${EXAMS.length}</b><span>paket ujian</span></div>
@@ -426,7 +488,7 @@ function homeHTML(){
       <div class="eyebrow">Format ujian</div>
       <h3>Bobot domain</h3>
       <div>${doms}</div>
-      <p class="note">Ujian asli: 50 soal dinilai + 15 soal uji coba tidak dinilai. Di sini semua 65 soal dinilai dan skor dikonversi linier ke 100–1000 sebagai perkiraan (700 ≈ 67% benar). Tidak ada penalti menebak.</p>
+      <p class="note">AWS asli memiliki 50 soal dinilai + 15 soal tidak dinilai yang identitasnya tidak diumumkan. Simulasi ini secara transparan memilih 50 wajib + 15 opsional dengan proporsi domain seimbang; skor 50 menentukan kelulusan simulasi, skor 65 hanya latihan tambahan. Nilai 100–1000 di sini hanya estimasi linier, bukan metode nilai resmi AWS. Tidak ada penalti untuk menebak.</p>
     </div>
   </div>
 
@@ -451,50 +513,65 @@ function questionCard(q, sel, shown, ctx, num){
       <p>${esc(q.e)}</p>
       <div class="tip"><b>Tips ujian</b>${esc(q.k)}</div></div>` : "";
   const dm = DOMAINS[q.d];
-  const head = `<div class="qhead">${num?`<span class="qno">${num}</span>`:""}<span class="dtag" style="color:${dm.c}">D${q.d} · ${dm.name}</span>${shown?`<span class="ttag">${q.ts?`Task ${esc(q.ts)} · `:""}${esc(q.t)}</span>`:""}</div>`;
+  const partLabel=q.part&&(ctx==="run"||ctx==="review")?`<span class="ttag">${q.part==="extra"?"OPSIONAL · tidak masuk skor 50":"WAJIB · dinilai"}</span>`:"";
+  const head = `<div class="qhead">${num?`<span class="qno">${num}</span>`:""}${partLabel}<span class="dtag" style="color:${dm.c}">D${q.d} · ${dm.name}</span>${shown?`<span class="ttag">${q.ts?`Task ${esc(q.ts)} · `:""}${esc(q.t)}</span>`:""}</div>`;
   let actions = "";
   if (ctx==="warm") actions = `<div class="actions">${shown?`<button class="btn" data-act="warmnext">Soal lain</button>`:`<button class="btn primary" data-act="warmcheck" ${sel.length?"":"disabled"}>Cek jawaban</button>`}</div>`;
   return `<div class="sheet">${head}<p class="qtext">${esc(q.q)}</p><p class="qhint">${multi?`Pilih ${q.a.length} jawaban.`:"Pilih 1 jawaban."}</p><div class="opts">${opts}</div>${explain}${actions}</div>`;
 }
 
 function runHTML(){
-  const i = S.cur, q = S.qs[i], sel = S.ans[i]||[], shown = !!S.revealed[i];
-  const flagged = S.flags.includes(i), last = i===S.qs.length-1;
-  const answered = S.qs.filter((_,k)=>(S.ans[k]||[]).length).length;
-  const card = questionCard(q, sel, shown, "run", `${i+1} / ${S.qs.length}`);
+  const i=S.cur,q=S.qs[i],sel=S.ans[i]||[],shown=!!S.revealed[i],modern=modernExam();
+  const flagged=S.flags.includes(i),last=i===S.qs.length-1,answered=S.qs.filter((_,k)=>answeredAt(k)).length;
+  const requiredDone=modern?S.qs.slice(0,CORE_COUNT).filter((_,k)=>answeredAt(k)).length:answered;
+  const extraTotal=modern?S.qs.length-CORE_COUNT:0;
+  const extraDone=extraTotal?S.qs.slice(CORE_COUNT).filter((_,k)=>answeredAt(k+CORE_COUNT)).length:0;
+  const card=questionCard(q,sel,shown,"run",`${i+1} / ${S.qs.length}`);
   let act;
-  if (S.mode==="practice"){
-    act = `<button class="btn" data-act="prev" ${i?"":"disabled"}>Sebelumnya</button><span class="spacer"></span>
-      ${shown ? (last?`<button class="btn primary" data-act="finish">Lihat hasil</button>`:`<button class="btn primary" data-act="next">Berikutnya <kbd>N</kbd></button>`)
-              : `<button class="btn primary" data-act="check" ${sel.length?"":"disabled"}>Cek jawaban <kbd>Enter</kbd></button>`}`;
-  } else {
-    act = `<button class="btn" data-act="prev" ${i?"":"disabled"}>Sebelumnya <kbd>P</kbd></button>
+  if(S.mode==="practice"){
+    act=`<button class="btn" data-act="prev" ${i?"":"disabled"}>Sebelumnya</button><span class="spacer"></span>
+      ${shown?(last?`<button class="btn primary" data-act="finish">Lihat hasil</button>`:
+      `<button class="btn primary" data-act="next">Berikutnya <kbd>N</kbd></button>`):
+      `<button class="btn primary" data-act="check" ${sel.length?"":"disabled"}>Cek jawaban <kbd>Enter</kbd></button>`}`;
+  }else{
+    const boundary=modern&&extraTotal>0&&i===CORE_COUNT-1;
+    const right=last?`<button class="btn primary" data-act="askfinish">Selesai</button>`:
+      boundary?`<button class="btn" data-act="askfinish">Kumpulkan 50 wajib</button><button class="btn primary" data-act="next">Lanjut 15 opsional</button>`:
+      `<button class="btn primary" data-act="next">Berikutnya <kbd>N</kbd></button>`;
+    act=`<button class="btn" data-act="prev" ${i?"":"disabled"}>Sebelumnya <kbd>P</kbd></button>
       <button class="btn ${flagged?"flagged":""}" data-act="flag">${flagged?"Ditandai":"Tandai untuk ditinjau"} <kbd>F</kbd></button>
-      <span class="spacer"></span>
-      ${last?`<button class="btn primary" data-act="askfinish">Selesai</button>`:`<button class="btn primary" data-act="next">Berikutnya <kbd>N</kbd></button>`}`;
+      <span class="spacer"></span>${right}`;
   }
-  const cells = S.qs.map((qq,k)=>{
-    let c = "cell";
-    if (S.mode==="practice" && S.revealed[k]) c += sameSet(S.ans[k]||[], qq.a)?" ok":" no";
-    else if ((S.ans[k]||[]).length) c += " ans";
-    if (S.flags.includes(k)) c += " flg";
-    if (k===i) c += " cur";
-    return `<button class="${c}" data-act="go" data-i="${k}" aria-label="Soal ${k+1}">${k+1}</button>`;
-  }).join("");
-  const unanswered = S.qs.length - answered;
-  const confirm = S.confirm ? `<div class="confirm">${unanswered?`<b>${unanswered} soal belum dijawab.</b> `:""}${S.flags.length?`${S.flags.length} soal masih ditandai. `:""}Kumpulkan ujian sekarang?
-      <div class="row"><button class="btn primary" data-act="finish">Kumpulkan</button><button class="btn" data-act="cancelfinish">Kembali ke soal</button></div></div>` : "";
-  const legend = S.mode==="exam"
-    ? `<span><i style="background:var(--accent-soft);border-color:var(--accent)"></i>Dijawab</span><span><i style="background:var(--flag);border-color:var(--flag);border-radius:50%"></i>Ditandai</span><span><i></i>Kosong</span>`
-    : `<span><i style="background:var(--good-soft);border-color:var(--good)"></i>Benar</span><span><i style="background:var(--bad-soft);border-color:var(--bad)"></i>Salah</span><span><i></i>Belum</span>`;
-  return `<div class="exam">
-    <div>${card}<div class="actions">${act}</div></div>
-    <aside class="nav">
-      <h3>Navigasi soal</h3>
-      <div class="grid">${cells}</div>
-      <div class="legend">${legend}</div>
-      <div class="counts"><span>Dijawab <b>${answered}</b></span><span>Ditandai <b>${S.flags.length}</b></span><span>Sisa <b>${unanswered}</b></span></div>
-      ${S.mode==="exam"?`<div class="actions" style="margin-top:12px"><button class="btn" data-act="askfinish" style="width:100%">Selesai &amp; kumpulkan</button></div>${confirm}`:`<div class="actions" style="margin-top:12px"><button class="btn" data-act="finish" style="width:100%">Akhiri &amp; lihat hasil</button></div>`}
+  const cells=S.qs.map((qq,k)=>{
+    let c="cell";
+    if(S.mode==="practice"&&S.revealed[k])c+=sameSet(S.ans[k]||[],qq.a)?" ok":" no";
+    else if(answeredAt(k))c+=" ans";
+    if(S.flags.includes(k))c+=" flg";
+    if(k===i)c+=" cur";
+    if(modern&&k>=CORE_COUNT)c+=" extra";
+    return `<button class="${c}" data-act="go" data-i="${k}" aria-label="Soal ${k+1}${modern?(k>=CORE_COUNT?" opsional":" wajib"):""}">${k+1}</button>`;
+  });
+  const nav=modern?`<div class="eyebrow" style="margin:12px 0 8px">50 soal wajib · dinilai</div><div class="grid">${cells.slice(0,CORE_COUNT).join("")}</div>
+    ${extraTotal?`<div class="eyebrow" style="margin:18px 0 8px">15 soal opsional · tidak masuk skor 50</div><div class="grid">${cells.slice(CORE_COUNT).join("")}</div>`:""}`:
+    `<div class="grid">${cells.join("")}</div>`;
+  const unfilled=S.qs.length-answered,missing=modern?CORE_COUNT-requiredDone:unfilled;
+  const confirm=S.confirm?(modern?
+    `<div class="confirm">
+      ${missing?`<b>Masih ada ${missing} soal wajib yang belum dijawab.</b> Jawab semua 50 sebelum mengumpulkan hasil.`:
+      `<b>Semua 50 soal wajib selesai.</b> ${extraTotal?`Tambahan: ${extraDone}/15 dijawab. ${extraDone===15?"Skor 65 juga akan ditampilkan.":"Opsional boleh dilewati; skor 65 hanya muncul jika semuanya dijawab."}`:""} Kumpulkan hasil sekarang?`}
+      <div class="row">${missing?`<button class="btn primary" data-act="missingcore">Ke soal wajib kosong</button>`:
+      `<button class="btn primary" data-act="finish">Kumpulkan hasil</button>`}<button class="btn" data-act="cancelfinish">Kembali</button></div></div>`:
+    `<div class="confirm">${unfilled?`<b>${unfilled} soal belum dijawab.</b> `:""}Kumpulkan ujian sekarang?
+      <div class="row"><button class="btn primary" data-act="finish">Kumpulkan</button><button class="btn" data-act="cancelfinish">Kembali</button></div></div>`):"";
+  const legend=S.mode==="exam"?`<span><i style="background:var(--accent-soft);border-color:var(--accent)"></i>Dijawab</span><span><i style="background:var(--flag);border-color:var(--flag);border-radius:50%"></i>Ditandai</span><span><i></i>Kosong</span>`:
+    `<span><i style="background:var(--good-soft);border-color:var(--good)"></i>Benar</span><span><i style="background:var(--bad-soft);border-color:var(--bad)"></i>Salah</span><span><i></i>Belum</span>`;
+  const summary=modern?`<span>Wajib <b>${requiredDone}/50</b></span>${extraTotal?`<span>Opsional <b>${extraDone}/15</b></span>`:""}<span>Ditandai <b>${S.flags.length}</b></span>`:
+    `<span>Dijawab <b>${answered}</b></span><span>Ditandai <b>${S.flags.length}</b></span><span>Sisa <b>${unfilled}</b></span>`;
+  return `<div class="exam"><div>${card}<div class="actions">${act}</div></div>
+    <aside class="nav"><h3>Navigasi soal</h3>${nav}<div class="legend">${legend}</div>
+      <div class="counts">${summary}</div>
+      ${S.mode==="exam"?`<div class="actions" style="margin-top:12px"><button class="btn" data-act="askfinish" style="width:100%">Selesai &amp; kumpulkan</button></div>${confirm}`:
+      `<div class="actions" style="margin-top:12px"><button class="btn" data-act="finish" style="width:100%">Akhiri &amp; lihat hasil</button></div>`}
     </aside></div>`;
 }
 
@@ -513,47 +590,59 @@ function gauge(score){
 }
 
 function resultHTML(){
-  const R = S.result, pass = R.score>=PASS;
-  const rows = [1,2,3,4].filter(d=>R.dom[d].t).map(d=>{
-    const x = R.dom[d], p = x.c/x.t, weak = p < PASS_PCT;
+  const R=S.result,modern=modernExam(),passed=R.complete&&R.score>=PASS;
+  const rows=Object.keys(DOMAINS).filter(d=>R.dom[d].t).map(d=>{
+    const x=R.dom[d],p=x.c/x.t,weak=p<PASS_PCT;
     return `<div class="brow">
       <span><b>D${d}</b> ${DOMAINS[d].name}<span class="tagw" style="color:${weak?"var(--bad)":"var(--good)"}">${weak?"Perlu latihan":"Aman"}</span></span>
       <span class="ct">${x.c} / ${x.t}</span><span class="pc">${Math.round(p*100)}%</span>
       <div class="bar"><i style="width:${p*100}%;background:${DOMAINS[d].c}"></i><span class="th" style="left:${PASS_PCT*100}%"></span></div>
-    </div>`;}).join("");
-  const f = S.filter;
-  const list = S.qs.map((q,i)=>({q,i,sel:S.ans[i]||[]})).filter(x=>{
-    const ok = sameSet(x.sel,x.q.a);
-    return f==="all" || (f==="wrong"&&!ok) || (f==="flag"&&S.flags.includes(x.i)) || (f==="right"&&ok);
+    </div>`;
+  }).join("");
+  const review=S.qs.map((q,i)=>({q,i,sel:S.ans[i]||[]}));
+  const graded=review.filter(x=>!modern||x.i<CORE_COUNT||x.sel.length>0);
+  const wrongN=graded.filter(x=>!sameSet(x.sel,x.q.a)).length,rightN=graded.length-wrongN;
+  const list=review.filter(x=>{
+    const ok=sameSet(x.sel,x.q.a),skippedExtra=modern&&x.i>=CORE_COUNT&&!x.sel.length;
+    return S.filter==="all"||(S.filter==="wrong"&&!ok&&!skippedExtra)||(S.filter==="right"&&ok)||(S.filter==="flag"&&S.flags.includes(x.i));
   });
-  const wrongN = S.qs.length - R.correct;
-  const fchip = (k,label)=>`<button class="chip" data-act="filter" data-f="${k}" aria-pressed="${f===k}">${label}</button>`;
-  const title = S.mode==="exam" ? `Hasil Mock Exam ${pad2(S.examId)}` : "Hasil latihan";
-  const next = S.mode==="exam" && S.examId < EXAMS.length ? `<button class="btn" data-act="exam" data-id="${S.examId+1}">Lanjut ke Mock Exam ${pad2(S.examId+1)}</button>` : "";
-  return `
-  <section class="result-head">
-    ${gauge(R.score)}
-    <div>
-      <div class="eyebrow">${title}${R.timeUp?" · waktu habis":""}</div>
-      <h1 style="margin-top:6px">${pass?"Lulus. Skor di atas batas 700.":"Belum lulus. Fokus ke domain yang merah."}</h1>
-      <p>${pass?"Baca ulang pembahasan soal yang salah, lalu lanjut ke paket berikutnya. Skor yang stabil di atas 800 di beberapa paket adalah tanda siap ujian.":"Baca pembahasan setiap soal yang salah sampai paham alasan tiap opsi, pelajari bagian materi untuk topik di bawah, lalu ulangi paket ini."}</p>
-      <div class="stats">
-        <div><b>${R.correct}/${R.total}</b><span>jawaban benar</span></div>
-        <div><b>${Math.round(R.pct*100)}%</b><span>akurasi</span></div>
-        <div><b>${fmtTime(R.used)}</b><span>waktu terpakai</span></div>
-      </div>
-      <div class="actions">
-        ${S.mode==="exam"?`<button class="btn primary" data-act="exam" data-id="${S.examId}">Ulangi paket ini</button>${next}`:`<button class="btn primary" data-act="practice">Latihan lagi</button>`}
-        <a class="btn" href="materi.html">Buka materi</a>
-      </div>
+  const chip=(key,label)=>`<button class="chip" data-act="filter" data-f="${key}" aria-pressed="${S.filter===key}">${label}</button>`;
+  const title=S.mode==="exam"?`Hasil Mock Exam ${pad2(S.examId)}${modern?` · ${S.scope==="full"?"65":"50"} soal`:" · format lama"}`:"Hasil latihan";
+  const next=S.mode==="exam"&&S.examId<EXAMS.length?`<button class="btn" data-act="exam" data-id="${S.examId+1}" data-scope="${S.scope==="full"?"full":"core"}">Paket ${pad2(S.examId+1)}</button>`:"";
+  const headline=modern&&!R.complete?"Waktu habis: soal wajib belum selesai.":passed?`Lulus simulasi. Skor inti ≥ ${PASS}.`:"Belum lulus simulasi. Fokus ke domain lemah.";
+  const splitScores=modern?`<div class="panel" style="margin:18px 0">
+    <div class="eyebrow">Dua hasil penilaian</div><div class="stats">
+      <div><b>${R.correct}/50</b><span>Benar dari 50 wajib</span></div>
+      <div><b>${R.score}</b><span>Skor wajib 50 (100–1000)</span></div>
+      <div><b>${R.extraAnswered}/${R.extraTotal}</b><span>Soal tambahan dijawab</span></div>
+      <div><b>${R.fullScore==null?"—":R.fullScore}</b><span>Skor latihan 65 (100–1000)</span></div>
     </div>
-  </section>
-  <section class="breakdown"><h2>Per domain</h2><p class="note" style="margin:0 0 6px">Garis vertikal menandai ambang perkiraan lulus (≈67%).</p>${rows}
-    ${R.topics.length?`<div class="eyebrow" style="margin-top:16px">Topik yang perlu dipelajari ulang</div><div class="topics">${R.topics.map(([t,n])=>`<span>${esc(t)}${n>1?` ×${n}`:""}</span>`).join("")}</div>`:""}
-  </section>
-  <div class="filters"><span class="eyebrow" style="margin-right:6px">Pembahasan</span>
-    ${fchip("wrong",`Salah (${wrongN})`)}${fchip("right",`Benar (${R.correct})`)}${S.flags.length?fchip("flag",`Ditandai (${S.flags.length})`):""}${fchip("all","Semua")}</div>
-  <div class="review-list">${list.length?list.map(x=>questionCard(x.q,x.sel,true,"review",`Soal ${x.i+1}`)).join(""):`<p class="note">Tidak ada soal di filter ini.</p>`}</div>`;
+    <p class="note" style="margin-top:12px">${R.extraTotal===0?"Mode 50: tidak ada soal opsional. Pilih mode 65 untuk mendapatkan nilai latihan 65 soal.":
+      R.fullScore==null?"Skor 65 tidak dihitung sampai semua 15 soal tambahan dijawab. Soal tambahan yang kosong tidak mengurangi skor wajib.":
+      `Skor 65 dihitung dari ${R.fullCorrect}/65 jawaban benar. Hanya skor 50 menentukan kelulusan simulasi.`}</p>
+    <p class="note" style="margin-top:8px">Soal wajib dan tambahan dipisahkan untuk latihan dengan distribusi domain seimbang, bukan identifikasi soal yang tidak dinilai pada ujian AWS asli. Konversi nilai 100–1000 adalah estimasi linier, bukan algoritma resmi AWS.</p>
+  </div>`:"";
+  return `<section class="result-head">${gauge(R.score)}
+    <div><div class="eyebrow">${title}${R.timeUp?" · waktu habis":""}</div>
+      <h1 style="margin-top:6px">${headline}</h1>
+      <p>${modern&&!R.complete?"Soal wajib yang belum dijawab saat waktu habis dihitung salah; status lulus tidak diberikan.":
+      passed?"Baca pembahasan soal yang salah, lalu lanjut ke paket berikutnya.":"Baca pembahasan dan pelajari materi topik yang belum dikuasai."}</p>
+      <div class="stats"><div><b>${R.correct}/${R.total}</b><span>jawaban inti benar</span></div>
+        <div><b>${Math.round(R.pct*100)}%</b><span>akurasi inti</span></div>
+        <div><b>${fmtTime(R.used)}</b><span>waktu terpakai</span></div></div>
+      <div class="actions">
+        ${S.mode==="exam"?`<button class="btn primary" data-act="exam" data-id="${S.examId}" data-scope="${S.scope==="full"?"full":"core"}">Ulangi ${S.scope==="full"?"65":"50"} soal</button>${next}`:
+        `<button class="btn primary" data-act="practice">Latihan lagi</button>`}
+        <a class="btn" href="materi.html">Buka materi</a></div></div></section>
+    ${splitScores}
+    <section class="breakdown"><h2>Per domain${modern?" · 50 wajib":""}</h2>
+      <p class="note" style="margin:0 0 6px">Garis vertikal adalah ambang skor latihan perkiraan.</p>${rows}
+      ${R.topics.length?`<div class="eyebrow" style="margin-top:16px">Topik untuk dipelajari ulang</div><div class="topics">${R.topics.map(([t,n])=>`<span>${esc(t)}${n>1?` ×${n}`:""}</span>`).join("")}</div>`:""}
+    </section>
+    <div class="filters"><span class="eyebrow" style="margin-right:6px">Pembahasan</span>
+      ${chip("wrong",`Salah (${wrongN})`)}${chip("right",`Benar (${rightN})`)}
+      ${S.flags.length?chip("flag",`Ditandai (${S.flags.length})`):""}${chip("all","Semua")}</div>
+    <div class="review-list">${list.length?list.map(x=>questionCard(x.q,x.sel,true,"review",`Soal ${x.i+1}`)).join(""):`<p class="note">Tidak ada soal di filter ini.</p>`}</div>`;
 }
 
 /* ---------------- interaction ---------------- */
@@ -573,9 +662,9 @@ document.addEventListener("click", e=>{
   const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
   switch(b.dataset.act){
     case "home": case "pause": saveRun(); clearInterval(tick); S.screen="home"; S.warm=null; render(); window.scrollTo(0,0); break;
-    case "resume": { const r = store("clf_run"); if(r){ S = { ...S, ...r, screen:"run", confirm:false }; if (S.endAt && Date.now()>=S.endAt) finish(true); else { render(); startTick(); } } break; }
+    case "resume": { const r = store("clf_run"); if(r){ S = { ...S, ...r, scope:r.scope||(r.mode==="exam"?"legacy":null), screen:"run", confirm:false }; if (S.endAt && Date.now()>=S.endAt) finish(true); else { render(); startTick(); } } break; }
     case "discard": store("clf_run", null); render(); break;
-    case "exam": startExam(+b.dataset.id); break;
+    case "exam": startExam(+b.dataset.id,b.dataset.scope||"core"); break;
     case "practice": startPractice(); break;
     case "wrongonly": startWrongOnly(); break;
     case "dom": { const d=+b.dataset.d, ds=S.prefs.domains; S.prefs.domains = ds.includes(d)?ds.filter(x=>x!==d):ds.concat(d).sort(); store("clf_prefs",S.prefs); render(); break; }
@@ -590,6 +679,7 @@ document.addEventListener("click", e=>{
     case "flag": toggleFlag(); break;
     case "askfinish": S.confirm=true; render(); break;
     case "cancelfinish": S.confirm=false; render(); break;
+    case "missingcore": {const i=S.qs.findIndex((q,k)=>k<CORE_COUNT&&!answeredAt(k));if(i>=0)go(i);break;}
     case "finish": finish(false); break;
     case "filter": S.filter=b.dataset.f; render(); break;
   }
