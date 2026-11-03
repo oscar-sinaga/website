@@ -384,13 +384,14 @@ function homeHTML(){
   const counts = {1:0,2:0,3:0,4:0}; POOL.forEach(q=>counts[q.d]++);
 
 const cards=EXAMS.map(ex=>{
-    const tries=hist.filter(h=>h.mode==="exam"&&h.ex===ex.id&&Number.isFinite(h.coreScore));
+    const tries=hist.filter(h=>h.mode==="exam"&&h.ex===ex.id&&Number.isFinite(h.coreScore)&&h.coreAnswered===CORE_COUNT);
     const old=hist.some(h=>h.mode==="exam"&&h.ex===ex.id&&!Number.isFinite(h.coreScore));
+    const incomplete=hist.some(h=>h.mode==="exam"&&h.ex===ex.id&&Number.isFinite(h.coreScore)&&h.coreAnswered<CORE_COUNT);
     const best=tries.reduce((max,h)=>Math.max(max,h.coreScore),0);
     const comp=Object.fromEntries(Object.keys(DOMAINS).map(d=>[d,0]));
     examSplit(ex).core.forEach(q=>comp[q.d]++);
     const bar=Object.keys(DOMAINS).map(d=>`<i style="width:${comp[d]/CORE_COUNT*100}%;background:${DOMAINS[d].c}"></i>`).join("");
-    const status=!tries.length?`<span class="pill new">${old?"Riwayat format lama":"Belum dicoba"}</span>`:
+    const status=!tries.length?`<span class="pill new">${incomplete?"Pernah dicoba · belum lengkap":old?"Riwayat format lama":"Belum dicoba"}</span>`:
       `<span class="pill ${best>=PASS?"pass":"fail"}">${best>=PASS?"Lulus":"Belum lulus"}</span>`;
     return `<div class="ex">
       <div class="num"><small>Mock exam</small>${pad2(ex.id)}</div>
